@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ELIT — Elite Level Intelligence Training</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg0:#020a05;--bg1:#071410;--bg2:#0b1f17;--bg3:#0f2b1e;
+  --bdr:#1a3d28;--a:#2ecc71;--ad:#1a7a43;--ak:#0d4a27;
+  --tp:#e8f5ee;--ts:#8ab09a;--tm:#4a7060;
+  --er:#e74c3c;--ew:#f39c12;--eb:#3498db;
+  --r:10px;--rl:18px;
+  --gw:0 0 18px rgba(46,204,113,.25);
+  --gs:0 0 38px rgba(46,204,113,.42);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg1);color:var(--tp);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(46,204,113,.02)1px,transparent 1px),linear-gradient(90deg,rgba(46,204,113,.02)1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0}
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:0;right:0;height:58px;background:rgba(2,10,5,.97);backdrop-filter:blur(18px);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:1000;gap:8px}
+.logo{font-family:'Barlow Condensed',sans-serif;font-size:1.75rem;font-weight:900;letter-spacing:6px;color:var(--a);text-shadow:var(--gw);cursor:pointer;flex-shrink:0;user-select:none}
+.tnav{display:flex;gap:1px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+.tnav::-webkit-scrollbar{display:none}
+.nb{background:none;border:none;color:var(--ts);font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:500;padding:6px 9px;border-radius:8px;cursor:pointer;transition:all .18s;white-space:nowrap;flex-shrink:0}
+.nb:hover{background:var(--bg3);color:var(--tp)}
+.nb.active{background:var(--ak);color:var(--a);border:1px solid var(--ad)}
+.nb.lout{color:var(--er);border:1px solid rgba(231,76,60,.2);background:rgba(231,76,60,.07)}
+.nb.lout:hover{background:rgba(231,76,60,.16)}
+.tr{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.ltog{display:flex;gap:2px;background:var(--bg2);border-radius:7px;padding:3px;border:1px solid var(--bdr)}
+.lb{background:none;border:none;color:var(--ts);font-size:.67rem;font-weight:700;padding:3px 8px;border-radius:5px;cursor:pointer;transition:all .18s}
+.lb.active{background:var(--ak);color:var(--a)}
+.uav{width:30px;height:30px;border-radius:50%;background:var(--ak);border:2px solid var(--ad);display:none;align-items:center;justify-content:center;cursor:pointer;font-size:.74rem;font-weight:700;color:var(--a);flex-shrink:0;transition:all .18s}
+.uav.show{display:flex}.uav:hover{border-color:var(--a);box-shadow:var(--gw)}
+.mntog{display:none;align-items:center;justify-content:center;width:30px;height:30px;background:var(--bg2);border:1px solid var(--bdr);border-radius:7px;color:var(--tp);font-size:.9rem;cursor:pointer;flex-shrink:0}
+@media(max-width:700px){.tnav{display:none}.mntog{display:flex}}
+.mdraw{position:fixed;top:58px;left:0;right:0;background:rgba(2,10,5,.98);backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr);padding:10px;z-index:999;display:none;flex-direction:column;gap:2px}
+.mdraw.open{display:flex}
+.umenu{position:fixed;top:62px;right:11px;background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r);padding:10px;z-index:999;min-width:175px;display:none}
+.umenu.open{display:block;animation:fdIn .18s ease}
+.um-n{font-weight:600;font-size:.8rem;margin-bottom:1px}
+.um-e{font-size:.66rem;color:var(--tm);margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--bdr)}
+.umb{width:100%;text-align:left;background:none;border:none;color:var(--ts);font-family:'DM Sans',sans-serif;font-size:.74rem;padding:5px 7px;border-radius:6px;cursor:pointer;transition:background .15s}
+.umb:hover{background:var(--bg3);color:var(--tp)}
+.umb.d{color:var(--er)}.umb.d:hover{background:rgba(231,76,60,.1)}
+/* PÁGINAS */
+.mc{margin-top:58px;min-height:calc(100vh - 58px);position:relative;z-index:1}
+.pg{display:none}
+.pg.active{display:block;animation:fdIn .3s ease}
+@keyframes fdIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes pls{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.65)}}
+@keyframes celebPop{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:scale(1)}}
+@keyframes ebPulse{0%{filter:brightness(1)}50%{filter:brightness(1.7)}100%{filter:brightness(1)}}
+@keyframes tPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+@keyframes sparkFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:var(--tx) scale(0)}}
+@keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+/* SHARED */
+.ctr{max-width:1080px;margin:0 auto;padding:26px 15px}
+.shd{margin-bottom:20px}
+.sti{font-family:'Barlow Condensed',sans-serif;font-size:1.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.sti span{color:var(--a)}
+.sde{font-size:.79rem;color:var(--ts);margin-top:4px;line-height:1.6}
+.card{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rl);padding:18px;transition:border-color .25s}
+.card:hover{border-color:var(--ad)}
+.cglow{box-shadow:var(--gw);border-color:var(--ad)}
+.fg{margin-bottom:11px}
+.fl{display:block;font-size:.67rem;font-weight:600;color:var(--ts);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.fi,.fs,.fta{width:100%;padding:8px 11px;background:var(--bg0);border:1px solid var(--bdr);border-radius:var(--r);color:var(--tp);font-family:'DM Sans',sans-serif;font-size:.82rem;outline:none;transition:all .18s}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--ad);box-shadow:0 0 0 2px rgba(46,204,113,.09)}
+.fs{cursor:pointer}.fs option{background:var(--bg2)}.fta{resize:vertical;min-height:68px}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+@media(max-width:660px){.fr2,.fr3,.dgrid{grid-template-columns:1fr}}
+.ch{display:flex;align-items:center;gap:7px;margin-bottom:12px}
+.ci{width:28px;height:28px;border-radius:8px;background:var(--ak);display:flex;align-items:center;justify-content:center;font-size:.84rem;flex-shrink:0}
+.ct{font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.tag{font-size:.61rem;font-weight:600;padding:2px 6px;border-radius:100px;background:var(--ak);color:var(--a);letter-spacing:.4px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(272px,1fr));gap:13px}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.frange{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:var(--bg0);border-radius:2px;outline:none;cursor:pointer}
+.frange::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--a);box-shadow:0 0 6px rgba(46,204,113,.5)}
+.svd{text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;color:var(--a);margin-top:3px}
+.slbls{display:flex;justify-content:space-between;font-size:.62rem;color:var(--tm);margin-bottom:2px}
+.posgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}
+.posbtn{padding:8px 5px;border-radius:var(--r);border:1px solid var(--bdr);background:var(--bg0);color:var(--ts);font-family:'DM Sans',sans-serif;font-size:.73rem;font-weight:500;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:4px;justify-content:center}
+.posbtn:hover{border-color:var(--ad);color:var(--tp)}.posbtn.sel{background:var(--ak);border-color:var(--a);color:var(--a)}
+.utog{display:flex;gap:2px;background:var(--bg0);border-radius:7px;padding:3px;border:1px solid var(--bdr);width:fit-content;margin-bottom:8px}
+.ubt{background:none;border:none;color:var(--ts);font-family:'DM Sans',sans-serif;font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:5px;cursor:pointer;transition:all .18s}
+.ubt.active{background:var(--ak);color:var(--a)}
+.daygrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:4px}
+.daychk{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.59rem;color:var(--tm);cursor:pointer}
+.daychk input{accent-color:var(--a)}
+/* BOTONES */
+.bp{display:inline-flex;align-items:center;gap:8px;background:var(--a);color:var(--bg0);font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:700;padding:11px 24px;border-radius:100px;border:none;cursor:pointer;transition:all .28s;letter-spacing:.3px}
+.bp:hover{transform:translateY(-2px);box-shadow:var(--gs)}
+.bs{display:inline-flex;align-items:center;gap:6px;background:transparent;color:var(--tp);font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;padding:10px 17px;border-radius:100px;border:1px solid var(--bdr);cursor:pointer;transition:all .25s}
+.bs:hover{border-color:var(--ad);background:var(--bg2)}
+.bf{width:100%;background:var(--a);color:var(--bg0);font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:700;padding:11px;border-radius:100px;border:none;cursor:pointer;transition:all .25s;margin-top:5px}
+.bf:hover{transform:translateY(-1px);box-shadow:var(--gw)}
+/* LANDING */
+.land{min-height:calc(100vh - 58px);display:flex;align-items:center;justify-content:center;padding:48px 18px;position:relative;overflow:hidden}
+.lbg{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}
+.lbg.c1{width:460px;height:460px;background:radial-gradient(circle,rgba(46,204,113,.11),transparent 70%);top:-80px;right:-70px}
+.lbg.c2{width:300px;height:300px;background:radial-gradient(circle,rgba(46,204,113,.06),transparent 70%);bottom:50px;left:-50px}
+.lcont{text-align:center;max-width:700px;position:relative;z-index:2}
+.lbadge{display:inline-flex;align-items:center;gap:7px;background:var(--ak);border:1px solid var(--ad);border-radius:100px;padding:5px 14px;margin-bottom:18px;font-size:.67rem;font-weight:600;color:var(--a);letter-spacing:1px;text-transform:uppercase}
+.ldot{width:5px;height:5px;border-radius:50%;background:var(--a);animation:pls 2s infinite}
+.ltitle{font-family:'Barlow Condensed',sans-serif;font-size:clamp(4rem,16vw,10rem);font-weight:900;line-height:.9;letter-spacing:-2px;color:var(--a);text-shadow:var(--gs);margin-bottom:10px}
+.lsub{font-family:'Barlow Condensed',sans-serif;font-size:clamp(.85rem,2.3vw,1.3rem);font-weight:300;letter-spacing:4px;color:var(--ts);text-transform:uppercase;margin-bottom:13px}
+.lslogan{font-size:.95rem;color:var(--ts);line-height:1.75;max-width:500px;margin:0 auto 26px}
+.lslogan strong{color:var(--tp)}
+.lacts{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-bottom:42px}
+.lstats{display:flex;gap:28px;justify-content:center;flex-wrap:wrap}
+.sv{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:700;color:var(--a);line-height:1}
+.sl{font-size:.63rem;color:var(--tm);text-transform:uppercase;letter-spacing:1px;margin-top:3px}
+/* QUIÉNES SOMOS */
+.qs-hero{background:linear-gradient(135deg,var(--bg2),var(--bg0));border:1px solid var(--bdr);border-radius:var(--rl);padding:28px;margin-bottom:18px;position:relative;overflow:hidden}
+.qs-section{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rl);padding:24px;margin-bottom:14px;transition:all .28s}
+.qs-section:hover{border-color:var(--ad);box-shadow:0 0 20px rgba(46,204,113,.07)}
+.qs-section.purpose{border-left:3px solid var(--a)}
+.qs-section.why{border-left:3px solid var(--ew)}
+.qs-badge{display:inline-flex;align-items:center;gap:6px;font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;padding:3px 10px;border-radius:100px;margin-bottom:12px}
+.qs-section.purpose .qs-badge{background:rgba(46,204,113,.12);color:var(--a);border:1px solid var(--ad)}
+.qs-section.why .qs-badge{background:rgba(243,156,18,.1);color:var(--ew);border:1px solid rgba(243,156,18,.3)}
+.qs-title{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;line-height:1.1}
+.qs-section.purpose .qs-title{color:var(--a)}
+.qs-section.why .qs-title{color:var(--ew)}
+.qs-body{font-size:.86rem;color:var(--ts);line-height:1.85}
+.qs-body strong{color:var(--tp)}
+.qs-values{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:16px}
+.qs-val{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--r);padding:16px;text-align:center}
+.qs-val-ico{font-size:1.8rem;margin-bottom:7px}
+.qs-val-tit{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--a);margin-bottom:5px}
+.qs-val-txt{font-size:.74rem;color:var(--ts);line-height:1.55}
+/* BLOQUE INSPIRACIÓN */
+.qs-section.inspo{border-left:3px solid #9b59b6;background:linear-gradient(135deg,rgba(155,89,182,.05),var(--bg2))}
+.qs-section.inspo:hover{border-color:#9b59b6;box-shadow:0 0 22px rgba(155,89,182,.1)}
+.qs-section.inspo .qs-badge{background:rgba(155,89,182,.12);color:#c39bd3;border:1px solid rgba(155,89,182,.35)}
+.qs-section.inspo .qs-title{color:#c39bd3}
+.inspo-verse-wrap{position:relative;background:linear-gradient(135deg,rgba(11,31,23,.9),rgba(15,43,30,.7));border:1px solid rgba(155,89,182,.3);border-radius:14px;padding:28px 28px 20px 44px;margin:14px 0;overflow:hidden}
+.inspo-verse-wrap::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(46,204,113,.02),rgba(155,89,182,.04));pointer-events:none}
+.inspo-quote-mark{position:absolute;top:-8px;left:12px;font-family:'Barlow Condensed',sans-serif;font-size:6rem;font-weight:900;color:rgba(46,204,113,.18);line-height:1;pointer-events:none;user-select:none}
+.inspo-verse{font-family:'DM Sans',sans-serif;font-size:.95rem;color:var(--tp);line-height:1.95;font-style:italic;font-weight:300;letter-spacing:.2px;position:relative;z-index:1}
+.inspo-ref{font-family:'Barlow Condensed',sans-serif;font-size:.92rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--a);margin-top:13px;text-align:right;position:relative;z-index:1}
+.inspo-pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:11px;margin-top:15px}
+.inspo-pillar{background:rgba(155,89,182,.06);border:1px solid rgba(155,89,182,.2);border-radius:var(--r);padding:14px;text-align:center;transition:all .25s}
+.inspo-pillar:hover{border-color:rgba(155,89,182,.45);background:rgba(155,89,182,.1);transform:translateY(-2px)}
+.inspo-pillar-ico{font-size:1.6rem;margin-bottom:6px}
+.inspo-pillar-tit{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#c39bd3;margin-bottom:5px}
+.inspo-pillar-txt{font-size:.73rem;color:var(--ts);line-height:1.6}
+/* FIN BLOQUE INSPIRACIÓN */
+/* SUSCRIPCIÓN */
+.sub-plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:24px}
+.plan-card{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rl);padding:22px 18px;position:relative;transition:all .28s;text-align:center}
+.plan-card:hover{border-color:var(--ad);transform:translateY(-3px)}
+.plan-card.featured{border-color:var(--a);box-shadow:var(--gw)}
+.plan-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--a);color:var(--bg0);font-family:'DM Sans',sans-serif;font-size:.6rem;font-weight:700;padding:2px 10px;border-radius:100px;white-space:nowrap;text-transform:uppercase;letter-spacing:.5px}
+.plan-name{font-family:'Barlow Condensed',sans-serif;font-size:1.25rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.plan-price{font-family:'Barlow Condensed',sans-serif;font-size:2.6rem;font-weight:900;color:var(--a);line-height:1;margin-bottom:4px}
+.plan-period{font-size:.68rem;color:var(--tm);margin-bottom:14px}
+.plan-features{text-align:left}
+.plan-feature{font-size:.74rem;color:var(--ts);display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;line-height:1.45}
+.plan-feature::before{content:'✓';color:var(--a);font-weight:700;flex-shrink:0;margin-top:1px}
+.pay-methods{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.pm{display:flex;align-items:center;justify-content:center;gap:7px;background:var(--bg2);border:1px solid var(--bdr);border-radius:9px;padding:10px 16px;font-size:.76rem;font-weight:700;color:var(--ts);transition:all .22s;min-width:110px;cursor:default}
+.pm:hover{border-color:var(--ad)}
+.pm-ico{width:26px;height:17px;border-radius:3px;flex-shrink:0;display:inline-block}
+.pm.visa .pm-ico{background:linear-gradient(135deg,#1a1f71,#2563eb)}
+.pm.mc .pm-ico{background:linear-gradient(90deg,#eb001b 40%,#f79e1b 60%)}
+.pm.amex .pm-ico{background:linear-gradient(135deg,#007bc1,#00bcb4)}
+.pm.paypal .pm-ico{background:linear-gradient(135deg,#003087,#009cde)}
+.pm.pse .pm-ico{background:linear-gradient(135deg,#00a651,#0072c6)}
+.ssl-box{display:flex;align-items:center;gap:10px;background:var(--ak);border:1px solid var(--ad);border-radius:var(--r);padding:12px 16px;font-size:.79rem;color:var(--a)}
+/* AUTH */
+.authp{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 58px);padding:34px 15px}
+.authbox{width:100%;max-width:400px;background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rl);padding:30px}
+.authbox h2{font-family:'Barlow Condensed',sans-serif;font-size:1.55rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
+.authbox h2 span{color:var(--a)}
+.authbox>p{font-size:.75rem;color:var(--ts);margin-bottom:17px}
+.atabs{display:flex;gap:2px;background:var(--bg0);border-radius:8px;padding:3px;margin-bottom:16px}
+.atab{flex:1;padding:7px;background:none;border:none;color:var(--ts);font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;border-radius:6px;cursor:pointer;transition:all .18s}
+.atab.active{background:var(--ak);color:var(--a)}
+.adiv{text-align:center;color:var(--tm);font-size:.68rem;margin:11px 0;position:relative}
+.adiv::before,.adiv::after{content:'';position:absolute;top:50%;width:38%;height:1px;background:var(--bdr)}
+.adiv::before{left:0}.adiv::after{right:0}
+/* CALENDARIO INTEGRADO */
+.wpbar{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rl);padding:13px;margin-bottom:16px}
+.wptit{font-family:'Barlow Condensed',sans-serif;font-size:.86rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;display:flex;justify-content:space-between}
+.wppct{color:var(--a)}
+.ptrack{background:var(--bg0);border-radius:3px;height:6px;overflow:hidden}
+.pfill{height:100%;background:linear-gradient(90deg,var(--ad),var(--a));border-radius:3px;transition:width .55s ease}
+.wksel{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.wkbt{background:var(--bg2);border:1px solid var(--bdr);border-radius:7px;color:var(--tp);font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:600;padding:5px 12px;cursor:pointer;transition:all .18s}
+.wkbt:hover{border-color:var(--ad)}
+.wklbl{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;color:var(--a);letter-spacing:1px;flex:1;text-align:center}
+/* Tarjeta de día */
+.cal-day-card{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rl);overflow:hidden;margin-bottom:10px;transition:border-color .25s,box-shadow .25s}
+.cal-day-card.train-day{border-left:3px solid var(--ad)}
+.cal-day-card.train-day:hover{border-color:var(--a);box-shadow:0 0 16px rgba(46,204,113,.1)}
+.cal-day-card.done-day{border-color:var(--a)!important;box-shadow:var(--gw);background:rgba(13,74,39,.15)}
+.cal-day-card.today-day{box-shadow:0 0 0 2px var(--a)}
+.cal-day-card.rest-day{opacity:.8}
+.cal-day-card.future-day{opacity:.6}
+.cdc-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;gap:10px}
+.cal-day-card.rest-day .cdc-hdr{cursor:pointer}
+.cdc-left{display:flex;align-items:center;gap:13px}
+.cdc-date{text-align:center;min-width:46px;flex-shrink:0}
+.cdc-daynum{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:900;line-height:1;color:var(--tp)}
+.cal-day-card.done-day .cdc-daynum{color:var(--a)}
+.cal-day-card.today-day .cdc-daynum{color:var(--a)}
+.cdc-dayname{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--tm);margin-top:2px}
+.cal-day-card.train-day .cdc-dayname,.cal-day-card.today-day .cdc-dayname{color:var(--ad)}
+.cal-day-card.done-day .cdc-dayname{color:var(--a)}
+.cdc-ambito{font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;line-height:1.1}
+.cdc-ambito.vel{color:var(--a)}
+.cdc-ambito.fue{color:var(--er)}
+.cdc-ambito.tec{color:var(--eb)}
+.cdc-ambito.rst{color:var(--ts)}
+.cdc-sub{font-size:.7rem;color:var(--ts);margin-top:2px}
+.cdc-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.cdc-bdg{font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:100px;white-space:nowrap}
+.bdg-today{background:var(--ak);color:var(--a);border:1px solid var(--ad)}
+.bdg-done{background:rgba(46,204,113,.15);color:var(--a);border:1px solid var(--ad)}
+.bdg-future{background:var(--bg0);color:var(--tm);border:1px solid var(--bdr)}
+.bdg-rest{background:rgba(74,112,96,.1);color:var(--tm);border:1px solid var(--bdr)}
+.cdc-arrow{color:var(--tm);font-size:1rem;transition:transform .32s;flex-shrink:0}
+.cdc-arrow.open{transform:rotate(90deg)}
+/* Bloque acordeón */
+.cdc-body{overflow:hidden;max-height:0;opacity:0;transition:max-height .65s cubic-bezier(.4,0,.2,1),opacity .38s ease}
+.cdc-body.open{max-height:9000px;opacity:1}
+.cdc-inner{border-top:1px solid var(--bdr);padding:16px}
+/* Tarjeta descanso */
+.rest-block{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r);padding:16px;margin-bottom:12px;display:flex;align-items:flex-start;gap:13px}
+.rest-ico{font-size:2.2rem;flex-shrink:0}
+.rest-tit{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ts);margin-bottom:6px}
+.rest-list{list-style:none;font-size:.75rem;color:var(--tm);line-height:1.9}
+.rest-list li::before{content:'· ';color:var(--a)}
+.sem-mini{display:flex;align-items:center;gap:8px;padding:9px 13px;border-radius:var(--r);border:1px solid;font-size:.74rem;margin-top:10px}
+.sem-mini.g{background:rgba(46,204,113,.05);border-color:var(--ad);color:var(--a)}
+.sem-mini.y{background:rgba(243,156,18,.05);border-color:rgba(243,156,18,.3);color:var(--ew)}
+.sem-mini.r{background:rgba(231,76,60,.05);border-color:rgba(231,76,60,.3);color:var(--er)}
+/* Barra de sesión */
+.sess-bar{background:var(--bg0);border:1px solid var(--bdr);border-radius:var(--r);padding:10px 13px;margin-bottom:13px}
+.sb-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.sb-lbl{font-size:.67rem;font-weight:600;color:var(--ts);text-transform:uppercase;letter-spacing:.8px}
+.sb-pct{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;color:var(--a)}
+.sb-track{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.sb-fill{height:100%;background:linear-gradient(90deg,var(--ad),var(--a));border-radius:3px;transition:width .5s ease}
+/* Botón confirmar */
+.cfm-wrap{margin-top:14px;padding-top:12px;border-top:1px solid var(--bdr)}
+.cfm-btn{width:100%;background:var(--a);color:var(--bg0);font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:700;padding:11px;border-radius:100px;border:none;cursor:pointer;transition:all .28s;display:flex;align-items:center;justify-content:center;gap:7px}
+.cfm-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:var(--gs)}
+.cfm-btn:disabled{cursor:not-allowed;opacity:.55}
+.cfm-btn.done{background:transparent;color:var(--a);border:2px solid var(--a);cursor:default;opacity:1}
+.cfm-btn.done:hover{transform:none;box-shadow:none}
+/* VIDEO WRAP 16:9 */
+.vwrap{position:relative;width:100%;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:var(--r);background:#000;margin-bottom:10px;border:1px solid rgba(46,204,113,.28)}
+.vwrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:var(--r)}
+/* EXERCISE CARDS */
+.exlist{display:flex;flex-direction:column;gap:9px}
+.excard{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;animation:cardIn .4s ease both;transition:border-color .22s}
+.excard:hover{border-color:var(--ad)}
+.excard.done-ex{border-color:var(--a)!important;background:rgba(13,74,39,.3)!important}
+.excard.done-ex .exnum{background:var(--a);color:var(--bg0)}
+.excard.done-ex .exname{color:var(--a)}
+.ex-done-badge{font-size:.62rem;font-weight:700;padding:1px 6px;border-radius:100px;background:rgba(46,204,113,.12);color:var(--a);border:1px solid var(--ad);margin-left:5px;display:none}
+.excard.done-ex .ex-done-badge{display:inline}
+.exhdr{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;cursor:pointer;user-select:none}
+.exinfo{display:flex;align-items:center;gap:8px}
+.exnum{width:22px;height:22px;border-radius:6px;background:var(--ak);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;color:var(--a);flex-shrink:0;transition:all .25s}
+.exname{font-weight:600;font-size:.81rem}
+.exmeta{font-size:.66rem;color:var(--tm);margin-top:1px}
+.xtog{background:none;border:none;color:var(--tm);font-size:.88rem;cursor:pointer;transition:transform .28s;flex-shrink:0}
+.xtog.open{transform:rotate(180deg)}
+.vbody{display:none;border-top:1px solid var(--bdr);padding:12px}
+.vbody.open{display:block;animation:fdIn .3s ease}
+.exdetail{font-size:.73rem;color:var(--ts);background:var(--bg0);border-left:2px solid var(--ad);padding:7px 10px;border-radius:0 var(--r) var(--r) 0;margin-bottom:8px;line-height:1.6}
+.exdetail strong{color:var(--a)}
+.rpe-row{display:flex;align-items:center;gap:4px;margin-bottom:8px}
+.rpedot{width:7px;height:7px;border-radius:50%}
+.rpe-txt{font-size:.67rem;color:var(--ts);margin-left:4px}
+/* ENERGY BAR (dashboard) */
+.ebar-wrap{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rl);padding:14px 16px;margin-bottom:13px}
+.ebh{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:5px}
+.ebt{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--tp)}
+.ebt span{color:var(--a)}
+.ebpct{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:900;color:var(--a);text-shadow:var(--gw)}
+.ebtrack{height:12px;background:var(--bg0);border-radius:6px;overflow:hidden;border:1px solid var(--bdr)}
+.ebfill{height:100%;background:linear-gradient(90deg,#0d4a27,#1a7a43,#2ecc71);border-radius:6px;transition:width .55s cubic-bezier(.34,1.56,.64,1)}
+.ebfill.pulse{animation:ebPulse .35s ease}
+.ebstats{display:flex;gap:12px;margin-top:7px;flex-wrap:wrap}
+.ebstat{font-size:.7rem;color:var(--ts)}.ebstat strong{color:var(--a)}
+/* TIMER */
+.timer-wrap{background:var(--bg0);border:1px solid var(--bdr);border-radius:var(--r);padding:12px;margin-top:9px}
+.timer-presets{display:flex;gap:4px;margin-bottom:7px;flex-wrap:wrap}
+.tpreset{background:var(--bg3);border:1px solid var(--bdr);border-radius:6px;color:var(--ts);font-family:'DM Sans',sans-serif;font-size:.66rem;font-weight:600;padding:3px 9px;cursor:pointer;transition:all .18s}
+.tpreset:hover,.tpreset.active{background:var(--ak);border-color:var(--ad);color:var(--a)}
+.timer-display{font-family:'Barlow Condensed',sans-serif;font-size:3rem;font-weight:900;color:var(--a);text-align:center;line-height:1;letter-spacing:2px;text-shadow:var(--gw);margin-bottom:9px;transition:color .2s}
+.timer-display.warn{color:var(--ew);animation:tPulse .5s infinite}
+.timer-display.done{color:var(--er);animation:tPulse .3s infinite}
+.timer-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.tbtn{font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:700;padding:7px 4px;border-radius:7px;border:none;cursor:pointer;transition:all .18s}
+.tbtn.start{background:var(--a);color:var(--bg0)}.tbtn.start:hover{box-shadow:var(--gw)}
+.tbtn.reset{background:var(--bg3);color:var(--ts);border:1px solid var(--bdr)}.tbtn.reset:hover{border-color:var(--ad);color:var(--tp)}
+.tbtn.complete{background:rgba(46,204,113,.1);color:var(--a);border:1px solid var(--ad)}.tbtn.complete:hover{background:var(--ak)}
+.tbtn.complete:disabled{opacity:.38;cursor:not-allowed}
+.timer-alert{text-align:center;font-size:.7rem;font-weight:600;margin-top:6px;height:16px}
+.timer-alert.on{color:var(--a);animation:blink .8s infinite}
+/* SEMÁFORO */
+.sem{border-radius:var(--rl);padding:16px;margin-bottom:13px;border:1px solid;overflow:hidden}
+.sem.g{background:rgba(46,204,113,.06);border-color:var(--ad)}
+.sem.y{background:rgba(243,156,18,.06);border-color:rgba(243,156,18,.3)}
+.sem.r{background:rgba(231,76,60,.06);border-color:rgba(231,76,60,.3)}
+.sem-ico{font-size:2.2rem;float:left;margin-right:11px}
+.sem-bdg{display:inline-flex;align-items:center;gap:4px;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 7px;border-radius:100px;margin-bottom:5px}
+.sem.g .sem-bdg{background:rgba(46,204,113,.12);color:var(--a)}
+.sem.y .sem-bdg{background:rgba(243,156,18,.12);color:var(--ew)}
+.sem.r .sem-bdg{background:rgba(231,76,60,.12);color:var(--er)}
+.semdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.sem.g .semdot{background:var(--a)}.sem.y .semdot{background:var(--ew)}.sem.r .semdot{background:var(--er)}
+.sem-lv{font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.sem.g .sem-lv{color:var(--a)}.sem.y .sem-lv{color:var(--ew)}.sem.r .sem-lv{color:var(--er)}
+.sem-rec{font-size:.76rem;color:var(--ts);line-height:1.6}
+/* DASHBOARD */
+.abars{margin-top:10px}
+.arow{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.an{font-size:.66rem;color:var(--ts);width:70px;flex-shrink:0}
+.atr{flex:1;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.af{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--ad),var(--a));transition:width 1.4s ease}
+.av{font-size:.66rem;color:var(--a);width:22px;text-align:right}
+.sring{width:76px;height:76px;border-radius:50%;border:4px solid var(--a);box-shadow:var(--gw);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 7px}
+.snum{font-family:'Barlow Condensed',sans-serif;font-size:1.65rem;font-weight:900;color:var(--a);line-height:1}
+.slb{font-size:.56rem;color:var(--tm)}
+.sbox{background:var(--bg0);border:1px solid var(--bdr);border-radius:var(--r);padding:13px;text-align:center;margin-bottom:10px}
+.chtc{position:relative;height:182px}
+.aiload{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px;gap:13px}
+.aisp{width:42px;height:42px;border:3px solid var(--bdr);border-top-color:var(--a);border-radius:50%;animation:spin .8s linear infinite}
+.aiload p{font-size:.75rem;color:var(--ts);animation:blink 1.4s infinite}
+.plog{margin-top:10px;display:flex;flex-direction:column;gap:4px;max-height:185px;overflow-y:auto}
+.ple{display:flex;justify-content:space-between;align-items:center;background:var(--bg0);border-radius:7px;padding:6px 10px;gap:6px;flex-wrap:wrap}
+.ple-c{font-size:.71rem;color:var(--ts);flex:1;min-width:70px}
+.ple-d{font-size:.71rem;font-weight:700;padding:1px 6px;border-radius:100px;white-space:nowrap}
+.dp{background:rgba(46,204,113,.1);color:var(--a);border:1px solid var(--ad)}
+.dn{background:rgba(243,156,18,.1);color:var(--ew);border:1px solid rgba(243,156,18,.28)}
+.ple-v{font-size:.71rem;font-weight:600;color:var(--a);white-space:nowrap}
+.ple-dt{font-size:.63rem;color:var(--tm);white-space:nowrap}
+/* NUTRICIÓN */
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:13px 0}
+@media(max-width:480px){.mgrid{grid-template-columns:1fr 1fr}}
+.mc2{background:var(--bg0);border:1px solid var(--bdr);border-radius:var(--r);padding:12px;text-align:center}
+.mc2:hover{border-color:var(--ad)}
+.mi{font-size:1.3rem;margin-bottom:5px}
+.mv{font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:900;color:var(--a);line-height:1}
+.mu{font-size:.63rem;color:var(--tm)}.ml{font-size:.68rem;color:var(--ts);margin-top:2px}
+.mbarw{height:3px;background:var(--bg3);border-radius:2px;margin-top:5px;overflow:hidden}
+.mbar{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--ad),var(--a));transition:width 1.1s ease}
+.mealp{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:11px}
+.mealcard{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--r);padding:11px}
+.mtime{font-size:.61rem;color:var(--tm);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.mname{font-weight:600;font-size:.78rem;margin-bottom:5px}
+.mitem{font-size:.7rem;color:var(--ts);display:flex;align-items:flex-start;gap:4px;margin-bottom:2px}
+.mitem::before{content:'·';color:var(--a);flex-shrink:0}
+.hydrow{display:flex;align-items:center;gap:10px;background:var(--bg0);border:1px solid var(--bdr);border-radius:var(--r);padding:10px;margin-top:9px}
+.nnote{background:var(--ak);border:1px solid var(--ad);border-radius:var(--r);padding:10px;font-size:.73rem;color:var(--a);margin-top:9px;line-height:1.6}
+.dayadj{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--r);padding:10px;margin-top:9px;font-size:.74rem;color:var(--ts);line-height:1.5}
+.dayadj strong{color:var(--tp)}
+/* SCOUTING */
+.uzn{border:2px dashed var(--ad);border-radius:var(--rl);padding:44px 28px;text-align:center;cursor:pointer;transition:all .28s;background:var(--bg2)}
+.uzn:hover,.uzn.over{border-color:var(--a);background:var(--ak);box-shadow:var(--gw)}
+.uico{font-size:2.3rem;margin-bottom:7px}
+.utit{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.usub{font-size:.75rem;color:var(--ts)}
+.ares{display:none}.ares.show{display:block;animation:fdIn .4s ease}
+.agrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;margin-top:12px}
+.acard{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rl);padding:15px}
+.acard-h{display:flex;align-items:center;gap:7px;margin-bottom:10px}
+.ascore{display:flex;align-items:baseline;gap:2px;margin-bottom:7px}
+.asnum{font-family:'Barlow Condensed',sans-serif;font-size:1.95rem;font-weight:900;color:var(--a)}
+.asmx{font-size:.8rem;color:var(--tm)}
+.abi{display:flex;align-items:flex-start;gap:4px;font-size:.73rem;color:var(--ts);margin-bottom:4px;line-height:1.5}
+.abiD{width:4px;height:4px;border-radius:50%;background:var(--a);flex-shrink:0;margin-top:5px}
+.abar{height:3px;border-radius:2px;background:var(--bg0);overflow:hidden;margin:12px 0}
+.afill2{height:100%;background:var(--a);animation:af2 2.3s ease forwards}
+@keyframes af2{from{width:0}to{width:100%}}
+.albl{text-align:center;font-size:.71rem;color:var(--ts);animation:blink 1s infinite}
+.svgr{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:10px;margin-top:11px}
+.svcard{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden}
+.svlbl{padding:7px 11px;font-size:.7rem;font-weight:600;color:var(--ts);border-top:1px solid var(--bdr)}
+.svlbl span{color:var(--a)}
+/* MODALES */
+.mover{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(7px);z-index:9000;display:flex;align-items:center;justify-content:center;padding:14px}
+.mover.hidden{display:none}
+.mbox{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rl);padding:28px;max-width:390px;width:100%;position:relative;animation:celebPop .3s ease}
+.mcls{position:absolute;top:10px;right:12px;background:none;border:none;color:var(--tm);font-size:1.1rem;cursor:pointer}.mcls:hover{color:var(--tp)}
+.mico2{font-size:2.3rem;text-align:center;margin-bottom:9px}
+.mtit{font-family:'Barlow Condensed',sans-serif;font-size:1.25rem;font-weight:700;letter-spacing:1px;text-align:center;color:var(--a);margin-bottom:6px;text-transform:uppercase}
+.mesim{background:var(--bg0);border:1px solid var(--ad);border-radius:var(--r);padding:11px;margin-bottom:14px;font-size:.73rem;line-height:1.7}
+.meh{display:flex;justify-content:space-between;margin-bottom:7px;padding-bottom:7px;border-bottom:1px solid var(--bdr)}
+.mef{color:var(--tm);font-size:.66rem}.mef strong{color:var(--a)}
+.mesub{font-weight:600;color:var(--tp);margin-bottom:5px;font-size:.75rem}.mebody{color:var(--ts)}
+.albdg{display:inline-block;background:rgba(231,76,60,.1);color:var(--er);border:1px solid rgba(231,76,60,.24);border-radius:5px;padding:1px 5px;font-size:.61rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.mbr{display:flex;gap:7px}
+.mbdis{flex:1;background:var(--bg3);color:var(--ts);font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;padding:9px;border-radius:100px;border:1px solid var(--bdr);cursor:pointer;transition:all .18s}
+.mbdis:hover{border-color:var(--ad);color:var(--tp)}
+.celeb-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);z-index:8000;display:flex;align-items:center;justify-content:center;padding:16px}
+.celeb-overlay.hidden{display:none}
+.celeb-box{background:var(--bg2);border:2px solid var(--a);border-radius:var(--rl);padding:34px 28px;text-align:center;max-width:400px;width:100%;position:relative;animation:celebPop .45s cubic-bezier(.34,1.56,.64,1)}
+.celeb-ico{font-size:3.6rem;margin-bottom:10px;animation:pls 1.2s ease infinite}
+.celeb-tit{font-family:'Barlow Condensed',sans-serif;font-size:1.75rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--a);text-shadow:var(--gs);margin-bottom:7px;line-height:1.1}
+.celeb-sub{font-size:.82rem;color:var(--ts);margin-bottom:18px;line-height:1.65}
+.sparkles{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:var(--rl)}
+.spark{position:absolute;width:5px;height:5px;border-radius:50%;animation:sparkFly 1.1s ease-out forwards}
+.toast{position:fixed;bottom:18px;right:18px;background:var(--ak);border:1px solid var(--ad);border-radius:var(--r);padding:10px 14px;color:var(--a);font-size:.78rem;font-weight:500;z-index:9999;transform:translateX(220%);transition:transform .3s ease;max-width:280px;line-height:1.5}
+.toast.show{transform:translateX(0)}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg0)}::-webkit-scrollbar-thumb{background:var(--ak);border-radius:2px}
+</style>
+</head>
+<body>
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo" id="logoBtn">ELIT</div>
+  <nav class="tnav" id="mainNav"></nav>
+  <div class="tr">
+    <div class="ltog"><button class="lb active" id="lES">ES</button><button class="lb" id="lEN">EN</button></div>
+    <button class="mntog" id="mntog">☰</button>
+    <div class="uav" id="uav">?</div>
+  </div>
+</header>
+<div class="mdraw" id="mdraw"></div>
+<div class="umenu" id="umenu">
+  <div class="um-n" id="umN">—</div><div class="um-e" id="umE">—</div>
+  <button class="umb" id="umPro">⚽ <span data-i="navProfile">Mi Perfil</span></button>
+  <button class="umb" id="umDsh">📊 <span data-i="navDashboard">Dashboard</span></button>
+  <button class="umb" id="umCal">📅 <span data-i="navCalendar">Calendario</span></button>
+  <button class="umb" id="umNut">🥗 <span data-i="navNutrition">Nutrición</span></button>
+  <button class="umb d" id="umOut">↩ <span data-i="logout">Cerrar Sesión</span></button>
+</div>
+<!-- MODAL SEGURIDAD -->
+<div class="mover hidden" id="secModal">
+  <div class="mbox">
+    <button class="mcls" id="secClose">✕</button>
+    <div class="mico2">🔐</div><div class="mtit" data-i="secTitle">Alerta de Seguridad</div>
+    <div class="mesim">
+      <div class="meh"><div class="mef">De: <strong>seguridad@elit.app</strong></div><div id="mTime" style="font-size:.63rem;color:var(--tm)">—</div></div>
+      <div class="mesub" id="mSubj">—</div>
+      <div class="mebody"><div class="albdg" data-i="secBadge">⚠ Acceso Detectado</div>
+        <p><span data-i="secHi">Hola</span> <strong id="mUser">—</strong>, <span data-i="secBody">nuevo acceso desde este dispositivo.</span></p><br/>
+        <p><strong data-i="secDev">Dispositivo:</strong> Web · <strong data-i="secHr">Hora:</strong> <span id="mTimeInl">—</span></p><br/>
+        <p data-i="secWarn">Si no fuiste tú, cambia tu contraseña.</p></div>
+    </div>
+    <div class="mbr">
+      <button class="mbdis" id="secWasMe" data-i="secWasMe">Era yo</button>
+      <button class="bf" id="secChg" style="flex:1;margin-top:0" data-i="secChg">Cambiar Contraseña</button>
+    </div>
+  </div>
+</div>
+<!-- CELEBRACIÓN -->
+<div class="celeb-overlay hidden" id="celebModal">
+  <div class="celeb-box">
+    <div class="sparkles" id="sparks"></div>
+    <div class="celeb-ico">🏆</div>
+    <div class="celeb-tit" id="celebTit">¡Sesión Completada!</div>
+    <div class="celeb-sub" id="celebSub">Has completado todos los ejercicios.</div>
+    <button class="bf" id="celebClose" style="max-width:210px;margin:0 auto">¡A por la siguiente! →</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<main class="mc">
+
+<!-- LANDING -->
+<section class="pg active" id="pg-landing">
+  <div class="land">
+    <div class="lbg c1"></div><div class="lbg c2"></div>
+    <div class="lcont">
+      <div class="lbadge"><span class="ldot"></span><span data-i="landBadge">Plataforma IA Deportiva · Tecnología de Élite</span></div>
+      <h1 class="ltitle">ELIT</h1>
+      <p class="lsub" data-i="landSub">Elite Level Intelligence Training</p>
+      <p class="lslogan"><span data-i="landSlogan">La primera plataforma que usa <strong>Inteligencia Artificial</strong> para construir el plan perfecto para cada futbolista. <strong>Datos reales. Resultados reales.</strong></span></p>
+      <div class="lacts">
+        <button class="bp" id="landStart">▶ <span data-i="landStartTxt">Comenzar Ahora</span></button>
+        <button class="bs" id="landDemo"><span data-i="landDemoTxt">Ver Demo</span> →</button>
+      </div>
+      <div class="lstats">
+        <div><div class="sv">2,400+</div><div class="sl" data-i="stat1">Jugadores</div></div>
+        <div><div class="sv">87%</div><div class="sl" data-i="stat2">Mejora</div></div>
+        <div><div class="sv">15K+</div><div class="sl" data-i="stat3">Rutinas</div></div>
+        <div><div class="sv">99%</div><div class="sl" data-i="stat4">Precisión IA</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIÉNES SOMOS -->
+<section class="pg" id="pg-about">
+  <div class="ctr">
+    <div class="shd"><h2 class="sti"><span data-i="aboutA">Quiénes</span> <span data-i="aboutB">Somos</span></h2><p class="sde" data-i="aboutDesc">La misión, el propósito y la fortaleza detrás de ELIT.</p></div>
+
+    <!-- HERO ELIT -->
+    <div class="qs-hero">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
+        <div style="font-size:2.5rem">🏆</div>
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--a)">ELIT</div>
+          <div style="font-size:.78rem;color:var(--ts);letter-spacing:2px;text-transform:uppercase" data-i="landSub">Elite Level Intelligence Training</div>
+        </div>
+      </div>
+      <p style="font-size:.85rem;color:var(--ts);line-height:1.8" data-i="aboutHeroText">Plataforma de entrenamiento deportivo inteligente para que cada futbolista, sin importar su nivel, tenga acceso a herramientas de élite.</p>
+    </div>
+
+    <!-- BLOQUE 1: PROPÓSITO -->
+    <div class="qs-section purpose">
+      <div class="qs-badge" data-i="purposeBadge">🎯 Nuestro Propósito</div>
+      <div class="qs-title" data-i="purposeTitle">Democratizando el Alto Rendimiento</div>
+      <p class="qs-body" data-i="purposeBody">En ELIT, nuestro propósito es <strong>democratizar el acceso al entrenamiento de alto rendimiento</strong>. Queremos que cualquier futbolista joven, sin importar sus recursos o procedencia, tenga a su disposición un preparador físico y un analista táctico de nivel profesional impulsado por Inteligencia Artificial para alcanzar su máximo potencial.</p>
+    </div>
+
+    <!-- BLOQUE 2: POR QUÉ SOMOS NECESARIOS -->
+    <div class="qs-section why">
+      <div class="qs-badge" data-i="whyBadge">⚡ ¿Por qué somos necesarios?</div>
+      <div class="qs-title" data-i="whyTitle">El Talento No Puede Perderse</div>
+      <p class="qs-body" data-i="whyBody">El fútbol moderno es altamente <strong>físico, táctico y veloz</strong>. Muchos talentos se pierden en las ligas juveniles porque no saben cómo entrenar su fuerza según su posición, no gestionan su fatiga o no reciben correcciones visuales de sus jugadas. ELIT resuelve esto integrando <strong>ciencia del deporte, psicología y análisis predictivo</strong> en una plataforma automatizada que acompaña al jugador 24/7.</p>
+    </div>
+
+    <!-- BLOQUE 3: INSPIRACIÓN Y FORTALEZA MENTAL -->
+    <div class="qs-section inspo">
+      <div class="qs-badge" data-i="inspoBadge">✝️ Inspiración y Fortaleza Mental</div>
+      <div class="qs-title" data-i="inspoTitle">La Corona que Dura Para Siempre</div>
+      <div class="inspo-verse-wrap">
+        <div class="inspo-quote-mark">"</div>
+        <p class="inspo-verse" data-i="inspoVerse">¿No saben que en una carrera todos los competidores corren, pero solo uno se lleva el premio? Corran, pues, de tal manera que lo ganen. Todos los deportistas se entrenan con mucha disciplina. Ellos lo hacen para obtener una corona que se marchita; nosotros, en cambio, por una corona que dura para siempre.</p>
+        <div class="inspo-ref" data-i="inspoRef">— 1 Corintios 9:24-25 (NVI)</div>
+      </div>
+      <div class="inspo-pillars">
+        <div class="inspo-pillar"><div class="inspo-pillar-ico">🏃</div><div class="inspo-pillar-tit" data-i="inspoPillar1Tit">Corre para Ganar</div><p class="inspo-pillar-txt" data-i="inspoPillar1Txt">Cada sesión con propósito, cada sprint con intención. No entrenes para sobrevivir, entrena para dominar.</p></div>
+        <div class="inspo-pillar"><div class="inspo-pillar-ico">🔥</div><div class="inspo-pillar-tit" data-i="inspoPillar2Tit">Disciplina de Élite</div><p class="inspo-pillar-txt" data-i="inspoPillar2Txt">Los campeones no nacen talentosos. Se forjan en la consistencia diaria cuando nadie está mirando.</p></div>
+        <div class="inspo-pillar"><div class="inspo-pillar-ico">👑</div><div class="inspo-pillar-tit" data-i="inspoPillar3Tit">La Corona Eterna</div><p class="inspo-pillar-txt" data-i="inspoPillar3Txt">Más allá de los trofeos, tu carácter y tu disciplina son el legado que permanece.</p></div>
+      </div>
+    </div>
+
+    <!-- VALORES -->
+    <div class="qs-values">
+      <div class="qs-val"><div class="qs-val-ico">🧬</div><div class="qs-val-tit" data-i="val1Tit">Ciencia</div><p class="qs-val-txt" data-i="val1Txt">Ejercicios basados en evidencia científica del deporte y fisiología del fútbol.</p></div>
+      <div class="qs-val"><div class="qs-val-ico">🤖</div><div class="qs-val-tit" data-i="val2Tit">Inteligencia IA</div><p class="qs-val-txt" data-i="val2Txt">Algoritmos que aprenden de tu perfil y ajustan el plan en tiempo real.</p></div>
+      <div class="qs-val"><div class="qs-val-ico">🌎</div><div class="qs-val-tit" data-i="val3Tit">Acceso Universal</div><p class="qs-val-txt" data-i="val3Txt">Disponible en cualquier dispositivo, diseñado para funcionar en el colegio.</p></div>
+      <div class="qs-val"><div class="qs-val-ico">📈</div><div class="qs-val-tit" data-i="val4Tit">Resultados Reales</div><p class="qs-val-txt" data-i="val4Txt">Seguimiento de marcas e historial de progreso en tiempo real.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SUSCRIPCIÓN -->
+<section class="pg" id="pg-subscription">
+  <div class="ctr">
+    <div class="shd"><h2 class="sti"><span data-i="subA">Suscripción</span> <span data-i="subB">y Pagos</span></h2><p class="sde" data-i="subDesc">Elige el plan que mejor se adapte a tu nivel.</p></div>
+    <div class="sub-plans">
+      <div class="plan-card">
+        <div class="plan-name" data-i="planFreeName">Gratuito</div>
+        <div class="plan-price">$0</div><div class="plan-period" data-i="planFreeP">/ siempre</div>
+        <div class="plan-features">
+          <div class="plan-feature" data-i="pf1">Plan básico 5 ejercicios/sesión</div>
+          <div class="plan-feature" data-i="pf2">Dashboard de progreso</div>
+          <div class="plan-feature" data-i="pf3">Semáforo de riesgo</div>
+          <div class="plan-feature" data-i="pf4">Calendario básico</div>
+        </div>
+        <button class="bf" style="margin-top:14px;border-radius:8px;padding:9px" onclick="showPage('auth')">Comenzar Gratis</button>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-badge" data-i="planPop">MÁS POPULAR</div>
+        <div class="plan-name" data-i="planProName">Formativo</div>
+        <div class="plan-price">$4.99</div><div class="plan-period" data-i="planProP">USD / mes</div>
+        <div class="plan-features">
+          <div class="plan-feature" data-i="pp1">Plan completo 8 ejercicios</div>
+          <div class="plan-feature" data-i="pp2">Videos YouTube integrados HD</div>
+          <div class="plan-feature" data-i="pp3">Temporizadores interactivos</div>
+          <div class="plan-feature" data-i="pp4">Nutrición por posición</div>
+          <div class="plan-feature" data-i="pp5">Scouting con IA</div>
+        </div>
+        <button class="bf" style="margin-top:14px;border-radius:8px;padding:9px" onclick="showPage('auth')">Suscribirme</button>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name" data-i="planEliteName">Élite</div>
+        <div class="plan-price">$9.99</div><div class="plan-period" data-i="planEliteP">USD / mes</div>
+        <div class="plan-features">
+          <div class="plan-feature" data-i="pe1">12 ejercicios/sesión</div>
+          <div class="plan-feature" data-i="pe2">Especialización diaria</div>
+          <div class="plan-feature" data-i="pe3">Análisis biomecánico</div>
+          <div class="plan-feature" data-i="pe4">Prioridad actualizaciones</div>
+          <div class="plan-feature" data-i="pe5">Soporte directo</div>
+        </div>
+        <button class="bf" style="margin-top:14px;border-radius:8px;padding:9px" onclick="showPage('auth')">Suscribirme</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ci">💳</div><div class="ct" data-i="payMethodsTit">Métodos de Pago</div></div>
+      <div class="pay-methods">
+        <div class="pm visa"><div class="pm-ico"></div>Visa</div>
+        <div class="pm mc"><div class="pm-ico"></div>Mastercard</div>
+        <div class="pm amex"><div class="pm-ico"></div>American Express</div>
+        <div class="pm paypal"><div class="pm-ico"></div>PayPal</div>
+        <div class="pm pse"><div class="pm-ico"></div>PSE / Local</div>
+      </div>
+      <div class="ssl-box"><span style="font-size:1.3rem">🔐</span><div><p data-i="sslNote"><strong>Transacciones protegidas</strong> con cifrado SSL de extremo a extremo. Solo diseño comercial de demostración.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- AUTH -->
+<section class="pg" id="pg-auth">
+  <div class="authp">
+    <div class="authbox">
+      <h2><span>ELIT</span> — <span data-i="authTitle">Tu Cuenta</span></h2>
+      <p data-i="authDesc">Regístrate o inicia sesión para acceder a tu plan personalizado.</p>
+      <div class="atabs">
+        <button class="atab active" id="tabReg" data-i="tabReg">🆕 Registrarse</button>
+        <button class="atab" id="tabLog" data-i="tabLog">🔑 Iniciar Sesión</button>
+      </div>
+      <div id="fReg">
+        <div class="fg"><label class="fl" data-i="fName">Nombre Completo</label><input type="text" class="fi" id="rName" placeholder="Carlos Rodríguez"/></div>
+        <div class="fg"><label class="fl" data-i="fEmail">Correo</label><input type="email" class="fi" id="rEmail" placeholder="tu@correo.com"/></div>
+        <div class="fg"><label class="fl" data-i="fPass">Contraseña</label><input type="password" class="fi" id="rPass" placeholder="Mínimo 6 caracteres"/></div>
+        <button class="bf" id="btnRegister" data-i="btnReg">Crear Cuenta Gratis →</button>
+      </div>
+      <div id="fLog" style="display:none">
+        <div class="fg"><label class="fl" data-i="fEmail">Correo</label><input type="email" class="fi" id="lEmail" placeholder="tu@correo.com"/></div>
+        <div class="fg"><label class="fl" data-i="fPass">Contraseña</label><input type="password" class="fi" id="lPass" placeholder="Tu contraseña"/></div>
+        <button class="bf" id="btnLogin" data-i="btnLog">Iniciar Sesión →</button>
+      </div>
+      <div class="adiv" data-i="authOr">o explora sin cuenta</div>
+      <button class="bs" id="btnGuest" style="width:100%;justify-content:center" data-i="btnGuest">Explorar como Invitado</button>
+    </div>
+  </div>
+</section>
+
+<!-- PERFIL -->
+<section class="pg" id="pg-profile">
+  <div class="ctr">
+    <div class="shd"><h2 class="sti"><span data-i="profA">Perfil</span> <span data-i="profB">Deportivo</span></h2><p class="sde" data-i="profDesc">Datos específicos para que la IA construya tu plan óptimo.</p></div>
+    <div class="pgrid">
+      <div class="card">
+        <div class="ch"><div class="ci">👤</div><div class="ct" data-i="secBasic">Datos Básicos</div></div>
+        <div class="fr2"><div class="fg"><label class="fl" data-i="fAge">Edad</label><input type="number" class="fi" id="pAge" min="10" max="45" placeholder="16"/></div><div class="fg"><label class="fl" data-i="fNat">País</label><input type="text" class="fi" id="pNat" placeholder="Colombia"/></div></div>
+        <div class="fg"><label class="fl" data-i="fPos">Posición</label>
+          <div class="posgrid">
+            <button class="posbtn" data-pos="Delantero" data-i="posF">⚡ Delantero</button>
+            <button class="posbtn" data-pos="Volante" data-i="posM">🔄 Volante</button>
+            <button class="posbtn" data-pos="Defensa" data-i="posD">🛡️ Defensa</button>
+            <button class="posbtn" data-pos="Arquero" data-i="posG">🥅 Arquero</button>
+          </div><input type="hidden" id="pPos"/>
+        </div>
+        <div class="fg"><label class="fl" data-i="fFoot">Pie</label><select class="fs" id="pFoot"><option value="derecho" data-i="footR">Derecho</option><option value="izquierdo" data-i="footL">Izquierdo</option><option value="ambidiestro" data-i="footB">Ambidiestro</option></select></div>
+        <div class="fg"><label class="fl" data-i="fLevel">Nivel</label>
+          <select class="fs" id="pLevel">
+            <option value="difutbol" data-i="lvl1">Nacional Interclubes (Difútbol)</option>
+            <option value="liga_a" data-i="lvl2">Liga Regional / Departamental A</option>
+            <option value="liga_b" selected data-i="lvl3">Liga Local / Municipal B</option>
+            <option value="escolar" data-i="lvl4">Torneo Escolar / Colegial</option>
+            <option value="recreativo" data-i="lvl5">Recreativo / Amateur</option>
+          </select>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci">📏</div><div class="ct" data-i="secPhys">Medidas</div></div>
+        <div class="fr2"><div class="fg"><label class="fl" data-i="fHeight">Altura (cm)</label><input type="number" class="fi" id="pHeight" placeholder="175"/></div><div class="fg"><label class="fl" data-i="fWeight">Peso (kg)</label><input type="number" class="fi" id="pWeight" placeholder="70"/></div></div>
+        <div class="fr2"><div class="fg"><label class="fl" data-i="fSpeed">30m (seg)</label><input type="number" class="fi" id="pSpeed" step="0.1" placeholder="4.2"/></div><div class="fg"><label class="fl" data-i="fEnd">Resistencia (min)</label><input type="number" class="fi" id="pEnd" placeholder="35"/></div></div>
+        <div class="fg"><label class="fl" data-i="fUnit">Unidad Fuerza</label><div class="utog"><button class="ubt active" id="uKG" data-unit="kg">KG</button><button class="ubt" id="uLB" data-unit="lb">LB</button></div></div>
+        <div class="fr3"><div class="fg"><label class="fl" id="sqLbl">Sentadilla (kg)</label><input type="number" class="fi" id="pSq" placeholder="80"/></div><div class="fg"><label class="fl" id="bpLbl">Banca (kg)</label><input type="number" class="fi" id="pBP" placeholder="60"/></div><div class="fg"><label class="fl" id="dlLbl">Muerto (kg)</label><input type="number" class="fi" id="pDL" placeholder="100"/></div></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci">⏱️</div><div class="ct" data-i="secTime">Tiempos</div></div>
+        <div class="fr2"><div class="fg"><label class="fl" data-i="fTeamH">Horas/sem equipo</label><input type="number" class="fi" id="pTeamH" placeholder="10" oninput="calcH()"/></div><div class="fg"><label class="fl" data-i="fSoloH">Horas/sem personal</label><input type="number" class="fi" id="pSoloH" placeholder="5" oninput="calcH()"/></div></div>
+        <div style="background:var(--bg0);border:1px solid var(--ad);border-radius:var(--r);padding:9px;text-align:center;margin-bottom:8px"><div class="fl" style="margin-bottom:2px" data-i="totalH">Total Horas/Semana</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:900;color:var(--a)" id="totalHD">15h</div></div>
+        <div class="fg"><label class="fl" data-i="fFreq">Días ELIT/semana</label><input type="number" class="fi" id="pFreq" min="1" max="7" placeholder="3"/></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci">🧠</div><div class="ct" data-i="secMental">Mental</div></div>
+        <div class="fg"><label class="fl" data-i="fMotivTxt">¿Por qué juegas?</label><textarea class="fta" id="pMotivT" placeholder="Sueño con llegar a profesional..."></textarea></div>
+        <div class="fg"><label class="fl" data-i="fGoalS">Meta corto plazo</label><input type="text" class="fi" id="pGoalS" placeholder="Bajar mi 30m a 4.0 seg"/></div>
+        <div class="fg"><label class="fl" data-i="fGoalL">Meta largo plazo</label><input type="text" class="fi" id="pGoalL" placeholder="Firmar con un club profesional"/></div>
+        <div class="fg"><label class="fl" data-i="fStress">Estrés en partido (1-10)</label>
+          <div><div class="slbls"><span data-i="stressLo">Tranquilo</span><span data-i="stressHi">Muy estresado</span></div><input type="range" class="frange" id="pStress" min="1" max="10" value="5" oninput="updSl('svS',this.value,'/10')"/><div class="svd" id="svS">5/10</div></div>
+        </div>
+        <div class="fg"><label class="fl" data-i="fMotivLvl">Motivación (1-10)</label>
+          <div><div class="slbls"><span data-i="motivLo">Baja</span><span data-i="motivHi">Máxima</span></div><input type="range" class="frange" id="pMotivLvl" min="1" max="10" value="7" oninput="updSl('svM',this.value,'/10')"/><div class="svd" id="svM">7/10</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:20px"><button class="bp" id="btnGenPlan" style="font-size:.96rem;padding:12px 30px">🤖 <span data-i="btnGen">Generar Plan con IA</span></button></div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section class="pg" id="pg-dashboard">
+  <div class="ctr">
+    <div class="shd"><h2 class="sti">Mi <span data-i="navDashboard">Dashboard</span></h2><p class="sde" data-i="dashDesc">Evaluación IA de tu rendimiento atlético actual.</p></div>
+    <div id="semSect"></div>
+    <div id="aiLoad" class="card aiload" style="display:none"><div class="aisp"></div><p data-i="aiLoading">Generando tu plan...</p></div>
+    <div id="dashC">
+      <div class="ebar-wrap" id="ebarWrap" style="display:none">
+        <div class="ebh"><div class="ebt"><span data-i="energyTitle">Nivel de Carga</span></div><div class="ebpct" id="ebPct">0%</div></div>
+        <div class="ebtrack"><div class="ebfill" id="ebFill" style="width:0%"></div></div>
+        <div class="ebstats"><div class="ebstat"><strong id="ebDone">0</strong>/<span id="ebTotal">0</span> <span data-i="exCompleted">ejercicios</span></div><div class="ebstat" id="ebStatus">—</div></div>
+      </div>
+      <div class="dgrid" style="margin-bottom:12px">
+        <div class="card cglow">
+          <div class="ch"><div class="ci">🎯</div><div class="ct" data-i="aiEval">Evaluación IA</div></div>
+          <div class="sbox"><div class="sring"><div class="snum" id="dScore">74</div><div class="slb">/100</div></div><div style="font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase" data-i="aiPot">Potencial Atlético</div><div style="font-size:.68rem;color:var(--ts);margin-top:2px" id="dScoreSub">—</div></div>
+          <div class="abars" id="attrBars"></div>
+        </div>
+        <div class="card"><div class="ch"><div class="ci">📈</div><div class="ct" data-i="progressHist">Historial</div></div><div class="chtc"><canvas id="pChart"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci">✍️</div><div class="ct" data-i="logTitle">Registrar Marca</div></div>
+        <div class="fr2">
+          <div class="fg"><label class="fl" data-i="fCat">Categoría</label>
+            <select class="fs" id="logCat">
+              <option value="speed" data-i="catSpeed">Velocidad 30m (seg)</option>
+              <option value="squat" data-i="catSq">Sentadilla</option>
+              <option value="bench" data-i="catBP">Press Banca</option>
+              <option value="dead" data-i="catDL">Peso Muerto</option>
+              <option value="endurance" data-i="catEnd">Resistencia (min)</option>
+            </select>
+          </div>
+          <div class="fg"><label class="fl" data-i="fValue">Valor</label><input type="number" class="fi" id="logVal" step="0.1" placeholder="0.0"/></div>
+        </div>
+        <button class="bf" id="btnSaveMark" style="max-width:195px" data-i="btnSave">Guardar</button>
+        <div class="plog" id="plog"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CALENDARIO INTEGRADO -->
+<section class="pg" id="pg-calendar">
+  <div class="ctr">
+    <div class="shd"><h2 class="sti"><span data-i="calA">Calendario</span> <span data-i="calB">& Rutinas</span></h2><p class="sde" data-i="calDesc">Haz clic en cada día para ver y completar tu rutina. Solo puedes confirmar el día de hoy.</p></div>
+    <div class="wpbar">
+      <div class="wptit"><span data-i="weekProg">Progreso Semanal</span><span class="wppct" id="wpPct">0%</span></div>
+      <div class="ptrack"><div class="pfill" id="pFill" style="width:0%"></div></div>
+      <div style="margin-top:6px;font-size:.7rem;color:var(--ts)" id="wpNote" data-i="calNote">Confirma tu entrenamiento de hoy.</div>
+    </div>
+    <div class="wksel"><button class="wkbt" id="wkPrev">◀</button><div class="wklbl" id="wkLbl">Semana 1</div><button class="wkbt" id="wkNext">▶</button></div>
+    <div id="calDayList"></div>
+  </div>
+</section>
+
+<!-- NUTRICIÓN -->
+<section class="pg" id="pg-nutrition">
+  <div class="ctr">
+    <div class="shd"><h2 class="sti"><span data-i="nutA">Nutrición</span> <span data-i="nutB">& Biotipo IA</span></h2><p class="sde" data-i="nutDesc">Mifflin-St Jeor × 1.725 — ajustado por posición y tipo de día.</p></div>
+    <div id="nutC"></div>
+  </div>
+</section>
+
+<!-- SCOUTING -->
+<section class="pg" id="pg-scouting">
+  <div class="ctr">
+    <div class="shd"><h2 class="sti"><span data-i="scA">Scouting</span> <span data-i="scB">con IA</span></h2><p class="sde" data-i="scDesc">Análisis personalizado por posición.</p></div>
+    <div class="uzn" id="uzn"><div class="uico">📹</div><div class="utit" data-i="uploadTit">Sube tu Video</div><p class="usub" data-i="uploadSub">Arrastra o clic · MP4, MOV</p></div>
+    <input type="file" id="vInp" accept="video/*" style="display:none"/>
+    <div id="anSect" style="display:none;margin-top:13px">
+      <div class="card"><div style="background:var(--bg0);border:1px solid var(--bdr);border-radius:var(--r);aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;margin-bottom:11px"><div style="font-size:1.8rem">🎬</div><div style="font-size:.74rem;color:var(--ts)" id="vName">—</div></div><div class="abar"><div class="afill2"></div></div><p class="albl" data-i="analyzingLbl">🤖 IA procesando...</p></div>
+    </div>
+    <div class="ares" id="aRes">
+      <div style="display:flex;align-items:center;gap:6px;margin:11px 0"><div style="width:6px;height:6px;border-radius:50%;background:var(--a);animation:pls 2s infinite"></div><span style="font-size:.74rem;color:var(--ts)" id="analyzeConf">Análisis completado</span></div>
+      <div class="agrid" id="scoutCards"></div>
+      <div style="text-align:center;margin-top:13px"><button class="bs" id="btnNewSc" data-i="btnNewSc">Analizar otro video</button></div>
+    </div>
+    <div class="card" style="margin-top:17px">
+      <div class="ch"><div class="ci">🎓</div><div class="ct" data-i="refVids">Videos de Referencia</div></div>
+      <p style="font-size:.75rem;color:var(--ts);margin-bottom:10px" data-i="refDesc">Tutoriales incrustados — reproducción directa dentro de ELIT.</p>
+      <div class="svgr" id="svGr"></div>
+    </div>
+  </div>
+</section>
+</main>
+<script>
+'use strict';
+/* ═══════════════════════════════════════════════════════════
+   ELIT v10 — JavaScript completo
+   FIX: landStart funciona siempre (sin interferencia de sesiones)
+   NUEVO: Calendario integrado con acordeones de ejercicios
+═══════════════════════════════════════════════════════════ */
+
+/* ── I18N ─────────────────────────────────────────────────── */
+const T={
+  navLanding:{es:'Inicio',en:'Home'},navAbout:{es:'Quiénes Somos',en:'About Us'},
+  navSubscription:{es:'Suscripción',en:'Subscription'},navAuth:{es:'Acceder',en:'Sign In'},
+  navProfile:{es:'Mi Perfil',en:'My Profile'},navDashboard:{es:'Dashboard',en:'Dashboard'},
+  navCalendar:{es:'Calendario',en:'Calendar'},navNutrition:{es:'Nutrición',en:'Nutrition'},
+  navScouting:{es:'Scouting IA',en:'AI Scouting'},logout:{es:'Cerrar Sesión',en:'Sign Out'},
+  landBadge:{es:'Plataforma IA Deportiva · Tecnología de Élite',en:'AI Sports Platform · Elite Technology'},
+  landSub:{es:'Elite Level Intelligence Training',en:'Elite Level Intelligence Training'},
+  landSlogan:{es:'La primera plataforma que usa <strong>Inteligencia Artificial</strong> para construir el plan perfecto para cada futbolista. <strong>Datos reales. Resultados reales.</strong>',en:'The first platform using <strong>Artificial Intelligence</strong> to build the perfect plan for every footballer. <strong>Real data. Real results.</strong>'},
+  landStartTxt:{es:'Comenzar Ahora',en:'Start Now'},landDemoTxt:{es:'Ver Demo',en:'View Demo'},
+  stat1:{es:'Jugadores',en:'Players'},stat2:{es:'Mejora',en:'Improvement'},stat3:{es:'Rutinas',en:'Routines'},stat4:{es:'Precisión IA',en:'AI Accuracy'},
+  aboutA:{es:'Quiénes',en:'About'},aboutB:{es:'Somos',en:'Us'},aboutDesc:{es:'La misión y el propósito detrás de ELIT.',en:'The mission and purpose behind ELIT.'},
+  aboutHeroText:{es:'Plataforma de entrenamiento deportivo inteligente para que cada futbolista, sin importar su nivel, tenga acceso a herramientas de élite.',en:'Intelligent sports training platform so every footballer, regardless of level, has access to elite tools.'},
+  purposeBadge:{es:'🎯 Nuestro Propósito',en:'🎯 Our Purpose'},
+  purposeTitle:{es:'Democratizando el Alto Rendimiento',en:'Democratizing High Performance'},
+  purposeBody:{es:'En ELIT, nuestro propósito es <strong>democratizar el acceso al entrenamiento de alto rendimiento</strong>. Queremos que cualquier futbolista joven, sin importar sus recursos o procedencia, tenga a su disposición un preparador físico y un analista táctico de nivel profesional impulsado por Inteligencia Artificial para alcanzar su máximo potencial.',en:'At ELIT, our purpose is to <strong>democratize access to high-performance training</strong>. We want every young footballer, regardless of resources or background, to have access to a professional-level physical trainer and tactical analyst powered by Artificial Intelligence.'},
+  whyBadge:{es:'⚡ ¿Por qué somos necesarios?',en:'⚡ Why Are We Necessary?'},
+  whyTitle:{es:'El Talento No Puede Perderse',en:'Talent Cannot Be Lost'},
+  whyBody:{es:'El fútbol moderno es altamente <strong>físico, táctico y veloz</strong>. Muchos talentos se pierden en las ligas juveniles porque no saben cómo entrenar su fuerza según su posición, no gestionan su fatiga o no reciben correcciones visuales de sus jugadas. ELIT resuelve esto integrando <strong>ciencia del deporte, psicología y análisis predictivo</strong> en una plataforma automatizada que acompaña al jugador 24/7.',en:'Modern football is highly <strong>physical, tactical and fast</strong>. Many talents are lost in youth leagues because they do not know how to train their strength by position or manage fatigue. ELIT solves this by integrating <strong>sports science, psychology and predictive analytics</strong> in an automated platform supporting the player 24/7.'},
+  /* ── BLOQUE INSPIRACIÓN ─────────────────────────── */
+  inspoBadge:{es:'✝️ Inspiración y Fortaleza Mental',en:'✝️ Inspiration & Mental Strength'},
+  inspoTitle:{es:'La Corona que Dura Para Siempre',en:'The Crown That Lasts Forever'},
+  inspoVerse:{es:'¿No saben que en una carrera todos los competidores corren, pero solo uno se lleva el premio? Corran, pues, de tal manera que lo ganen. Todos los deportistas se entrenan con mucha disciplina. Ellos lo hacen para obtener una corona que se marchita; nosotros, en cambio, por una corona que dura para siempre.',en:'Do you not know that in a race all the runners run, but only one gets the prize? Run in such a way as to get the prize. Everyone who competes in the games goes into strict training. They do it to get a crown that will not last, but we do it to get a crown that will last forever.'},
+  inspoRef:{es:'— 1 Corintios 9:24-25 (NVI)',en:'— 1 Corinthians 9:24-25 (NIV)'},
+  inspoPillar1Tit:{es:'Corre para Ganar',en:'Run to Win'},
+  inspoPillar1Txt:{es:'Cada sesión con propósito, cada sprint con intención. No entrenes para sobrevivir, entrena para dominar.',en:'Every session with purpose, every sprint with intention. Don\'t train to survive, train to dominate.'},
+  inspoPillar2Tit:{es:'Disciplina de Élite',en:'Elite Discipline'},
+  inspoPillar2Txt:{es:'Los campeones no nacen talentosos. Se forjan en la consistencia diaria cuando nadie está mirando.',en:'Champions are not born talented. They are forged in daily consistency when no one is watching.'},
+  inspoPillar3Tit:{es:'La Corona Eterna',en:'The Eternal Crown'},
+  inspoPillar3Txt:{es:'Más allá de los trofeos, tu carácter y tu disciplina son el legado que permanece.',en:'Beyond the trophies, your character and discipline are the legacy that endures.'},
+  /* ────────────────────────────────────────────────── */
+  val1Tit:{es:'Ciencia',en:'Science'},val1Txt:{es:'Ejercicios basados en evidencia científica del deporte.',en:'Evidence-based sport science exercises.'},
+  val2Tit:{es:'Inteligencia IA',en:'AI Intelligence'},val2Txt:{es:'Algoritmos que ajustan el plan en tiempo real.',en:'Algorithms that adjust the plan in real time.'},
+  val3Tit:{es:'Acceso Universal',en:'Universal Access'},val3Txt:{es:'Disponible en cualquier dispositivo.',en:'Available on any device.'},
+  val4Tit:{es:'Resultados Reales',en:'Real Results'},val4Txt:{es:'Historial de progreso en tiempo real.',en:'Real-time progress history.'},
+  subA:{es:'Suscripción',en:'Subscription'},subB:{es:'y Pagos',en:'& Payments'},subDesc:{es:'Elige el plan que mejor se adapte a tu nivel.',en:'Choose the plan that best fits your level.'},
+  planFreeName:{es:'Gratuito',en:'Free'},planFreeP:{es:'/ siempre',en:'/ forever'},
+  pf1:{es:'Plan básico 5 ejercicios/sesión',en:'Basic plan 5 exercises/session'},pf2:{es:'Dashboard de progreso',en:'Progress dashboard'},
+  pf3:{es:'Semáforo de riesgo',en:'Risk indicator'},pf4:{es:'Calendario básico',en:'Basic calendar'},
+  planPop:{es:'MÁS POPULAR',en:'MOST POPULAR'},planProName:{es:'Formativo',en:'Formative'},planProP:{es:'USD / mes',en:'USD / month'},
+  pp1:{es:'Plan completo 8 ejercicios',en:'Full plan 8 exercises'},pp2:{es:'Videos YouTube integrados HD',en:'Integrated HD YouTube videos'},
+  pp3:{es:'Temporizadores interactivos',en:'Interactive timers'},pp4:{es:'Nutrición por posición',en:'Nutrition by position'},pp5:{es:'Scouting con IA',en:'AI Scouting'},
+  planEliteName:{es:'Élite',en:'Elite'},planEliteP:{es:'USD / mes',en:'USD / month'},
+  pe1:{es:'12 ejercicios/sesión',en:'12 exercises/session'},pe2:{es:'Especialización diaria',en:'Daily specialization'},
+  pe3:{es:'Análisis biomecánico',en:'Biomechanical analysis'},pe4:{es:'Prioridad actualizaciones',en:'Priority updates'},pe5:{es:'Soporte directo',en:'Direct support'},
+  payMethodsTit:{es:'Métodos de Pago',en:'Payment Methods'},
+  sslNote:{es:'<strong>Transacciones protegidas</strong> con cifrado SSL de extremo a extremo. Solo diseño comercial de demostración.',en:'<strong>Transactions protected</strong> with end-to-end SSL encryption. Commercial demonstration design only.'},
+  authTitle:{es:'Tu Cuenta',en:'Your Account'},authDesc:{es:'Regístrate o inicia sesión.',en:'Register or sign in.'},
+  tabReg:{es:'🆕 Registrarse',en:'🆕 Register'},tabLog:{es:'🔑 Iniciar Sesión',en:'🔑 Sign In'},
+  fName:{es:'Nombre Completo',en:'Full Name'},fEmail:{es:'Correo',en:'Email'},fPass:{es:'Contraseña',en:'Password'},
+  btnReg:{es:'Crear Cuenta Gratis →',en:'Create Free Account →'},btnLog:{es:'Iniciar Sesión →',en:'Sign In →'},
+  authOr:{es:'o explora sin cuenta',en:'or explore without account'},btnGuest:{es:'Explorar como Invitado',en:'Explore as Guest'},
+  profA:{es:'Perfil',en:'Athletic'},profB:{es:'Deportivo',en:'Profile'},profDesc:{es:'Datos para que la IA construya tu plan óptimo.',en:'Data for AI to build your optimal plan.'},
+  secBasic:{es:'Datos Básicos',en:'Basic Info'},fAge:{es:'Edad',en:'Age'},fNat:{es:'País',en:'Country'},
+  fPos:{es:'Posición',en:'Position'},posF:{es:'⚡ Delantero',en:'⚡ Forward'},posM:{es:'🔄 Volante',en:'🔄 Midfielder'},posD:{es:'🛡️ Defensa',en:'🛡️ Defender'},posG:{es:'🥅 Arquero',en:'🥅 Goalkeeper'},
+  fFoot:{es:'Pie',en:'Foot'},footR:{es:'Derecho',en:'Right'},footL:{es:'Izquierdo',en:'Left'},footB:{es:'Ambidiestro',en:'Both'},
+  fLevel:{es:'Nivel',en:'Level'},lvl1:{es:'Nacional Interclubes (Difútbol)',en:'National Club Tournament'},lvl2:{es:'Liga Regional A',en:'Regional League A'},lvl3:{es:'Liga Local B',en:'Local League B'},lvl4:{es:'Torneo Escolar',en:'School Tournament'},lvl5:{es:'Recreativo / Amateur',en:'Recreational'},
+  secPhys:{es:'Medidas',en:'Measurements'},fHeight:{es:'Altura (cm)',en:'Height (cm)'},fWeight:{es:'Peso (kg)',en:'Weight (kg)'},fSpeed:{es:'30m (seg)',en:'30m (sec)'},fEnd:{es:'Resistencia (min)',en:'Endurance (min)'},
+  fUnit:{es:'Unidad Fuerza',en:'Strength Unit'},fSq:{es:'Sentadilla',en:'Squat'},fBP:{es:'Banca',en:'Bench'},fDL:{es:'Muerto',en:'Deadlift'},
+  secTime:{es:'Tiempos',en:'Training Time'},fTeamH:{es:'Horas/sem equipo',en:'Hours/week team'},fSoloH:{es:'Horas/sem personal',en:'Hours/week solo'},totalH:{es:'Total Horas/Semana',en:'Total Hours/Week'},fFreq:{es:'Días ELIT/semana',en:'ELIT Days/week'},
+  secMental:{es:'Mental',en:'Mental'},fMotivTxt:{es:'¿Por qué juegas?',en:'Why do you play?'},fGoalS:{es:'Meta corto plazo',en:'Short-term goal'},fGoalL:{es:'Meta largo plazo',en:'Long-term goal'},
+  fStress:{es:'Estrés en partido (1-10)',en:'Match stress (1-10)'},stressLo:{es:'Tranquilo',en:'Calm'},stressHi:{es:'Muy estresado',en:'Very stressed'},
+  fMotivLvl:{es:'Motivación (1-10)',en:'Motivation (1-10)'},motivLo:{es:'Baja',en:'Low'},motivHi:{es:'Máxima',en:'Maximum'},btnGen:{es:'Generar Plan con IA',en:'Generate AI Plan'},
+  navDashboard:{es:'Dashboard',en:'Dashboard'},dashDesc:{es:'Evaluación IA de tu rendimiento atlético.',en:'AI evaluation of your athletic performance.'},
+  aiEval:{es:'Evaluación IA',en:'AI Evaluation'},aiPot:{es:'Potencial Atlético',en:'Athletic Potential'},progressHist:{es:'Historial',en:'History'},
+  logTitle:{es:'Registrar Marca',en:'Log Mark'},fCat:{es:'Categoría',en:'Category'},
+  catSpeed:{es:'Velocidad 30m (seg)',en:'30m Sprint (sec)'},catSq:{es:'Sentadilla',en:'Squat'},catBP:{es:'Banca',en:'Bench Press'},catDL:{es:'Muerto',en:'Deadlift'},catEnd:{es:'Resistencia',en:'Endurance'},
+  fValue:{es:'Valor',en:'Value'},btnSave:{es:'Guardar',en:'Save'},aiLoading:{es:'Generando tu plan...',en:'Generating your plan...'},
+  energyTitle:{es:'Nivel de Carga',en:'Training Load'},exCompleted:{es:'ejercicios',en:'exercises'},
+  /* CALENDARIO INTEGRADO */
+  calA:{es:'Calendario',en:'Calendar'},calB:{es:'& Rutinas',en:'& Routines'},
+  calDesc:{es:'Haz clic en cada día para ver y completar tu rutina. Solo puedes confirmar el día de hoy.',en:'Click each day to view and complete your routine. You can only confirm today.'},
+  weekProg:{es:'Progreso Semanal',en:'Weekly Progress'},calNote:{es:'Confirma tu entrenamiento de hoy.',en:"Confirm today's training."},
+  calPerfect:{es:'🏆 ¡Semana perfecta!',en:'🏆 Perfect week!'},calGood:{es:'💪 {d}/{t} sesiones confirmadas.',en:'💪 {d}/{t} sessions confirmed.'},
+  /* Badges de días */
+  bdgToday:{es:'HOY',en:'TODAY'},bdgDone:{es:'✓ LISTO',en:'✓ DONE'},bdgFuture:{es:'PRÓXIMO',en:'UPCOMING'},bdgRest:{es:'DESCANSO',en:'REST'},
+  /* Ámbitos */
+  calVelTitle:{es:'⚡ VELOCIDAD PURA',en:'⚡ PURE SPEED'},calVelSub:{es:'Sprint · Aceleración · Frecuencia de zancada',en:'Sprint · Acceleration · Stride frequency'},
+  calFueTitle:{es:'💥 FUERZA EXPLOSIVA',en:'💥 EXPLOSIVE STRENGTH'},calFueSub:{es:'Pliometría · Potencia · Cadena posterior',en:'Plyometrics · Power · Posterior chain'},
+  calTecTitle:{es:'⚽ TÉCNICA INDIVIDUAL',en:'⚽ INDIVIDUAL TECHNIQUE'},calTecSub:{es:'Control · Conducción · Biomecánica',en:'Control · Dribbling · Biomechanics'},
+  calRstTitle:{es:'🧘 RECUPERACIÓN ACTIVA',en:'🧘 ACTIVE RECOVERY'},calRstSub:{es:'Descarga muscular y mental planificada',en:'Planned muscle and mental unload'},
+  /* Tips descanso */
+  rstTip1:{es:'Foam rolling 10 min (espalda baja, cuádriceps, gemelos)',en:'Foam rolling 10 min (lower back, quads, calves)'},
+  rstTip2:{es:'Movilidad articular: cadera, tobillo y hombros',en:'Joint mobility: hip, ankle and shoulders'},
+  rstTip3:{es:'Hidratación 2.5L · Sueño 8-9 horas obligatorio',en:'Hydration 2.5L · Sleep 8-9 hours mandatory'},
+  rstTip4:{es:'Visualización deportiva 5 min antes de dormir',en:'Sports visualization 5 min before sleep'},
+  /* Confirmar */
+  cfmBtn:{es:'✅ Confirmar Entrenamiento de Hoy',en:'✅ Confirm Today\'s Training'},
+  cfmDone:{es:'✓ Entrenamiento Confirmado',en:'✓ Training Confirmed'},
+  cfmOnlyToday:{es:'⚠️ Solo puedes confirmar el día de hoy.',en:'⚠️ You can only confirm today.'},
+  cfmFuture:{es:'Día próximo — no disponible aún',en:'Upcoming day — not available yet'},
+  cfmPast:{es:'Día pasado — sin confirmar',en:'Past day — not confirmed'},
+  sessProg:{es:'Progreso de Sesión',en:'Session Progress'},
+  semLabel:{es:'Semáforo IA · Riesgo',en:'AI Indicator · Risk'},
+  semGreenLv:{es:'Óptimo',en:'Optimal'},semYellowLv:{es:'Sobrecarga Ligera',en:'Mild Overload'},semRedLv:{es:'Riesgo Alto',en:'High Risk'},
+  semGreenRec:{es:'Carga óptima · {h}h/sem · estrés {s}/10.',en:'Optimal load · {h}h/week · stress {s}/10.'},
+  semYellowRec:{es:'{h}h/sem · estrés {s}/10 → carga alta.',en:'{h}h/week · stress {s}/10 → high load.'},
+  semRedRec:{es:'{h}h/sem + estrés {s}/10 → sobrecarga crítica.',en:'{h}h/week + stress {s}/10 → critical overload.'},
+  calConfirmedToast:{es:'✅ ¡Entrenamiento confirmado!',en:'✅ Training confirmed!'},
+  /* Timer */
+  timerStart:{es:'▶ Iniciar',en:'▶ Start'},timerPause:{es:'⏸ Pausar',en:'⏸ Pause'},
+  timerReset:{es:'↺ Reset',en:'↺ Reset'},timerDone:{es:'✓ Hecho',en:'✓ Done'},
+  timerReady:{es:'Listo para iniciar',en:'Ready to start'},timerGo:{es:'¡EJECUTA!',en:'GO FOR IT!'},
+  timerAlert:{es:'¡Tiempo! Descansa 30s.',en:'Time! Rest 30s.'},
+  /* Celebración */
+  celebTit:{es:'¡Sesión de Élite Completada!',en:'Elite Session Completed!'},
+  celebSub:{es:'Completaste todos los ejercicios de tu sesión. Tu cuerpo acaba de dar un gran paso.',en:'You completed every exercise in your session. Your body just took a great leap forward.'},
+  celebClose:{es:'¡A por la siguiente! →',en:'On to the next one! →'},
+  /* Nutrición */
+  nutA:{es:'Nutrición',en:'Nutrition'},nutB:{es:'& Biotipo IA',en:'& AI Biotype'},nutDesc:{es:'Mifflin-St Jeor × 1.725 — ajustado por posición.',en:'Mifflin-St Jeor × 1.725 — adjusted by position.'},
+  nutPlan:{es:'Plan Nutricional · ',en:'Nutrition Plan · '},macroP:{es:'Proteínas',en:'Proteins'},macroC:{es:'Carbohidratos',en:'Carbs'},macroF:{es:'Grasas',en:'Fats'},
+  hydLbl:{es:'Hidratación',en:'Hydration'},trainDay:{es:'Día de Entreno',en:'Training Day'},restDay:{es:'Día de Descanso',en:'Rest Day'},
+  trainNote:{es:'↑ Carbos a {g}g (+15%).',en:'↑ Carbs to {g}g (+15%).'},restNote:{es:'↓ Carbos a {g}g (-20%).',en:'↓ Carbs to {g}g (-20%).'},
+  nutNote:{es:'🤖 Calculado con Mifflin-St Jeor × 1.725.',en:'🤖 Mifflin-St Jeor × 1.725 calculation.'},
+  nutBioTxt:{
+    Delantero:{es:'Los delanteros hacen 60-80 sprints/partido. Máximos carbohidratos.',en:'Forwards do 60-80 sprints/match. Maximum carbs.'},
+    Volante:{es:'Los volantes recorren 11-13 km/partido. Mayor demanda de carbos.',en:'Midfielders cover 11-13 km/match. Highest carb demand.'},
+    Defensa:{es:'Mezclan resistencia y duelos explosivos. Balance carbos-proteína.',en:'Mix endurance and explosive duels. Carb-protein balance.'},
+    Arquero:{es:'Menor volumen aeróbico, mayor potencia. Más proteína.',en:'Lower aerobic volume, higher power. More protein.'},
+  },
+  /* Scouting */
+  scA:{es:'Scouting',en:'AI'},scB:{es:'con IA',en:'Scouting'},scDesc:{es:'Análisis personalizado por posición.',en:'Personalized analysis by position.'},
+  uploadTit:{es:'Sube tu Video',en:'Upload Your Video'},uploadSub:{es:'Arrastra o clic · MP4, MOV',en:'Drag or click · MP4, MOV'},
+  analyzingLbl:{es:'🤖 IA procesando...',en:'🤖 AI processing...'},analyzeConf:{es:'Análisis completado · 94.7%',en:'Analysis complete · 94.7%'},
+  btnNewSc:{es:'Analizar otro video',en:'Analyze another video'},refVids:{es:'Videos de Referencia',en:'Reference Videos'},refDesc:{es:'Tutoriales incrustados.',en:'Embedded tutorials.'},
+  /* Seguridad */
+  secTitle:{es:'Alerta de Seguridad',en:'Security Alert'},secBadge:{es:'⚠ Acceso Detectado',en:'⚠ Access Detected'},
+  secHi:{es:'Hola',en:'Hello'},secBody:{es:'nuevo acceso desde este dispositivo.',en:'new access from this device.'},
+  secDev:{es:'Dispositivo:',en:'Device:'},secHr:{es:'Hora:',en:'Time:'},secWarn:{es:'Si no fuiste tú, cambia tu contraseña.',en:"If this wasn't you, change your password."},
+  secWasMe:{es:'Era yo',en:'That was me'},secChg:{es:'Cambiar Contraseña',en:'Change Password'},
+  secLoginSubj:{es:'Nuevo inicio de sesión en ELIT',en:'New ELIT sign-in'},secRegSubj:{es:'¡Bienvenido a ELIT!',en:'Welcome to ELIT!'},
+  /* Toasts */
+  toastWelcome:{es:'✅ Bienvenido, {n}!',en:'✅ Welcome, {n}!'},toastPlan:{es:'🤖 ¡Plan generado!',en:'🤖 Plan generated!'},
+  toastLogout:{es:'👋 Sesión cerrada.',en:'👋 Signed out.'},toastSaved:{es:'✅ Marca guardada.',en:'✅ Mark saved.'},
+  toastFill:{es:'⚠️ Completa todos los campos.',en:'⚠️ Fill all fields.'},toastPass:{es:'⚠️ Contraseña mínimo 6 caracteres.',en:'⚠️ Password min 6 characters.'},
+  toastDup:{es:'⚠️ Ese correo ya tiene cuenta.',en:'⚠️ That email already has an account.'},toastBadCreds:{es:'❌ Correo o contraseña incorrectos.',en:'❌ Incorrect email or password.'},
+  toastNum:{es:'⚠️ Ingresa un valor numérico.',en:'⚠️ Enter a numeric value.'},toastExDone:{es:'💪 Ejercicio completado.',en:'💪 Exercise done.'},toastScout:{es:'🎯 ¡Análisis completado!',en:'🎯 Analysis complete!'},
+  /* Atributos */
+  attrSpeed:{es:'Velocidad',en:'Speed'},attrEnd:{es:'Resistencia',en:'Endurance'},attrStr:{es:'Fuerza',en:'Strength'},attrMent:{es:'Mental',en:'Mental'},attrTech:{es:'Técnica',en:'Technique'},
+  scoreDif:{es:'Nacional · Élite',en:'National · Elite'},scoreLigaA:{es:'Regional · Avanzado',en:'Regional · Advanced'},scoreLigaB:{es:'Local · Intermedio',en:'Local · Intermediate'},
+  scoreEsc:{es:'Escolar · Desarrollando',en:'School · Developing'},scoreRec:{es:'Recreativo · Iniciando',en:'Recreational · Starting'},
+  daysShort:{es:['LUN','MAR','MIÉ','JUE','VIE','SÁB','DOM'],en:['MON','TUE','WED','THU','FRI','SAT','SUN']},
+  daysFull:{es:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'],en:['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']},
+  chartLblS:{es:'Velocidad',en:'Speed'},chartLblE:{es:'Resistencia',en:'Endurance'},
+};
+
+let LANG='es';
+function i(k,v){const e=T[k];if(!e)return k;let s=(e&&typeof e==='object'&&'es' in e)?e[LANG]:String(e);if(v)Object.entries(v).forEach(([a,b])=>{s=s.replaceAll('{'+a+'}',b);});return s;}
+function applyLang(){
+  document.querySelectorAll('[data-i]').forEach(el=>{const t=i(el.getAttribute('data-i'));if(t.includes('<'))el.innerHTML=t;else el.textContent=t;});
+  document.querySelectorAll('option[data-i]').forEach(el=>{const t=i(el.getAttribute('data-i'));if(t)el.textContent=t;});
+  renderNav();
+}
+function setLang(l){LANG=l;document.getElementById('lES').classList.toggle('active',l==='es');document.getElementById('lEN').classList.toggle('active',l==='en');applyLang();saveUD();if(isAct('calendar'))initCal();if(isAct('nutrition'))initNut();if(isAct('scouting'))buildSV();}
+function isAct(id){return document.getElementById('pg-'+id)?.classList.contains('active');}
+
+/* ── PERSISTENCIA ─────────────────────────────────────────── */
+function getUD(email){try{const r=localStorage.getItem('elit_u_'+email);if(r)return JSON.parse(r);}catch(e){}return defUD(email);}
+function saveUD(){if(!SES.email)return;try{localStorage.setItem('elit_u_'+SES.email,JSON.stringify(UD));}catch(e){}}
+function defUD(email){return{email,profile:null,position:'',unit:'kg',calWeek:0,calState:{},logEntries:[],baseMarks:{speed:null,squat:null,bench:null,dead:null,endurance:null},lang:'es'};}
+let SES={email:null,name:null};
+let UD=defUD('');
+function loadSes(){try{const s=localStorage.getItem('elit_ses');if(s){const p=JSON.parse(s);if(p&&p.email&&p.email!=='guest@elit.app'){SES=p;UD=getUD(p.email);}}}catch(e){}}
+function saveSes(){try{localStorage.setItem('elit_ses',JSON.stringify(SES));}catch(e){}}
+function clearSes(){SES={email:null,name:null};UD=defUD('');try{localStorage.removeItem('elit_ses');}catch(e){}}
+
+/* ── NAVEGACIÓN ───────────────────────────────────────────── */
+const PG_GUEST=['landing','about','subscription','auth'];
+const PG_AUTH=['profile','dashboard','calendar','nutrition','scouting'];
+const PG_KEYS={landing:'navLanding',about:'navAbout',subscription:'navSubscription',auth:'navAuth',profile:'navProfile',dashboard:'navDashboard',calendar:'navCalendar',nutrition:'navNutrition',scouting:'navScouting'};
+
+function showPage(id){
+  /* Ocultar todas las páginas */
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('active'));
+  const pg=document.getElementById('pg-'+id);
+  if(!pg)return;
+  pg.classList.add('active');
+  renderNav();
+  document.getElementById('umenu').classList.remove('open');
+  document.getElementById('mdraw').classList.remove('open');
+  window.scrollTo({top:0,behavior:'smooth'});
+  /* Inicializar módulo si aplica */
+  if(id==='dashboard')initDash();
+  if(id==='calendar')initCal();
+  if(id==='nutrition')initNut();
+  if(id==='scouting')buildSV();
+  if(id==='profile')initPF();
+}
+
+function renderNav(){
+  const li=!!SES.email;
+  /* Páginas visibles según estado de sesión */
+  const pages=li?[...PG_GUEST.slice(0,3),...PG_AUTH]:PG_GUEST;
+  const activeId=[...document.querySelectorAll('.pg.active')].map(p=>p.id.replace('pg-',''))[0]||'landing';
+  const makeBtn=pid=>`<button class="nb${pid===activeId?' active':''}" data-page="${pid}">${i(PG_KEYS[pid])}</button>`;
+  let html=pages.map(makeBtn).join('');
+  if(li)html+=`<button class="nb lout" data-action="logout">↩ ${i('logout')}</button>`;
+  document.getElementById('mainNav').innerHTML=html;
+  let mhtml=pages.map(pid=>`<button class="nb" data-page="${pid}">${i(PG_KEYS[pid])}</button>`).join('');
+  if(li)mhtml+=`<button class="nb lout" data-action="logout">↩ ${i('logout')}</button>`;
+  document.getElementById('mdraw').innerHTML=mhtml;
+  /* Bind listeners en nav — NO usa cloneNode para evitar perder listeners externos */
+  ['mainNav','mdraw'].forEach(cid=>{
+    const c=document.getElementById(cid);if(!c)return;
+    c.querySelectorAll('[data-page]').forEach(btn=>{
+      btn.onclick=()=>showPage(btn.getAttribute('data-page'));
+    });
+    c.querySelectorAll('[data-action="logout"]').forEach(btn=>{btn.onclick=doLogout;});
+  });
+  const av=document.getElementById('uav');
+  li?(av.classList.add('show'),av.textContent=(SES.name||'?')[0].toUpperCase()):av.classList.remove('show');
+  document.getElementById('umN').textContent=SES.name||'—';
+  document.getElementById('umE').textContent=SES.email||'—';
+}
+
+/* ── AUTH ─────────────────────────────────────────────────── */
+function swTab(tab){document.getElementById('fReg').style.display=tab==='reg'?'block':'none';document.getElementById('fLog').style.display=tab==='log'?'block':'none';document.getElementById('tabReg').classList.toggle('active',tab==='reg');document.getElementById('tabLog').classList.toggle('active',tab==='log');}
+function doRegister(){
+  const name=document.getElementById('rName').value.trim();
+  const email=document.getElementById('rEmail').value.trim().toLowerCase();
+  const pass=document.getElementById('rPass').value;
+  if(!name||!email||!pass){toast(i('toastFill'));return;}
+  if(pass.length<6){toast(i('toastPass'));return;}
+  const users=JSON.parse(localStorage.getItem('elit_users')||'[]');
+  if(users.find(u=>u.email===email)){toast(i('toastDup'));return;}
+  users.push({name,email,password:pass});
+  localStorage.setItem('elit_users',JSON.stringify(users));
+  activateUser({name,email},'register');
+}
+function doLogin(){
+  const email=document.getElementById('lEmail').value.trim().toLowerCase();
+  const pass=document.getElementById('lPass').value;
+  if(!email||!pass){toast(i('toastFill'));return;}
+  const users=JSON.parse(localStorage.getItem('elit_users')||'[]');
+  const u=users.find(u=>u.email===email&&u.password===pass);
+  if(!u){toast(i('toastBadCreds'));return;}
+  activateUser(u,'login');
+}
+function doGuest(){activateUser({name:LANG==='es'?'Invitado':'Guest',email:'guest@elit.app'},'guest');}
+function activateUser(user,mode){
+  SES={email:user.email,name:user.name};
+  UD=getUD(user.email);
+  if(UD.lang){LANG=UD.lang;document.getElementById('lES').classList.toggle('active',LANG==='es');document.getElementById('lEN').classList.toggle('active',LANG==='en');}
+  saveSes();renderNav();
+  if(mode==='login'||mode==='register')showSecModal(user,mode);
+  else{toast(i('toastWelcome',{n:user.name}));setTimeout(()=>showPage('profile'),500);}
+}
+function doLogout(){clearSes();renderNav();showPage('landing');toast(i('toastLogout'));}
+function showSecModal(user,mode){
+  const ts=new Date().toLocaleTimeString(LANG==='es'?'es-CO':'en-US',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('mUser').textContent=user.name;
+  document.getElementById('mTimeInl').textContent=ts;
+  document.getElementById('mTime').textContent=ts;
+  document.getElementById('mSubj').textContent=i(mode==='register'?'secRegSubj':'secLoginSubj');
+  document.getElementById('secModal').classList.remove('hidden');
+}
+function closeSecModal(){document.getElementById('secModal').classList.add('hidden');toast(i('toastWelcome',{n:SES.name||''}));setTimeout(()=>showPage('profile'),380);}
+
+/* ── PERFIL ───────────────────────────────────────────────── */
+function initPF(){
+  const days=i('daysShort');
+  document.getElementById('trainDaysG') && (document.getElementById('trainDaysG').innerHTML=days.map((d,k)=>`<label class="daychk"><input type="checkbox" id="td${k}"/><span>${d}</span></label>`).join(''));
+  const p=UD.profile;if(!p)return;
+  const sv=(id,v)=>{const el=document.getElementById(id);if(el&&v!=null)el.value=v;};
+  sv('pAge',p.age);sv('pNat',p.nat);sv('pHeight',p.height);sv('pWeight',p.weight);sv('pSpeed',p.speed);sv('pEnd',p.end);sv('pFreq',p.freq);sv('pTeamH',p.teamh);sv('pSoloH',p.soloh);sv('pGoalS',p.goals);sv('pGoalL',p.goall);sv('pMotivT',p.motivtext);
+  if(p.foot)sv('pFoot',p.foot);if(p.level)sv('pLevel',p.level);
+  if(p.stress){sv('pStress',p.stress);updSl('svS',p.stress,'/10');}
+  if(p.motivlvl){sv('pMotivLvl',p.motivlvl);updSl('svM',p.motivlvl,'/10');}
+  sv('pSq',p.sq);sv('pBP',p.bp);sv('pDL',p.dl);
+  if(p.pos){document.querySelectorAll('.posbtn').forEach(b=>b.classList.toggle('sel',b.dataset.pos===p.pos));document.getElementById('pPos').value=p.pos;}
+  setUnit(p.unit||'kg');calcH();
+}
+function updSl(id,val,suf){const el=document.getElementById(id);if(el)el.textContent=val+suf;}
+function calcH(){const t=(parseFloat(document.getElementById('pTeamH')?.value)||0)+(parseFloat(document.getElementById('pSoloH')?.value)||0);const el=document.getElementById('totalHD');if(el)el.textContent=t+'h';return t;}
+function setUnit(u){UD.unit=u;document.getElementById('uKG').classList.toggle('active',u==='kg');document.getElementById('uLB').classList.toggle('active',u==='lb');const lb=u==='kg'?'kg':'lb';document.getElementById('sqLbl').textContent=`${i('fSq')} (${lb})`;document.getElementById('bpLbl').textContent=`${i('fBP')} (${lb})`;document.getElementById('dlLbl').textContent=`${i('fDL')} (${lb})`;}
+function genPlan(){
+  const pos=document.getElementById('pPos').value||'Volante';
+  const th=parseFloat(document.getElementById('pTeamH')?.value)||0;
+  const sh=parseFloat(document.getElementById('pSoloH')?.value)||0;
+  UD.profile={pos,foot:document.getElementById('pFoot').value,level:document.getElementById('pLevel').value,age:parseInt(document.getElementById('pAge').value)||16,nat:document.getElementById('pNat').value||'Colombia',height:parseFloat(document.getElementById('pHeight').value)||175,weight:parseFloat(document.getElementById('pWeight').value)||70,speed:parseFloat(document.getElementById('pSpeed').value)||4.5,end:parseFloat(document.getElementById('pEnd').value)||30,freq:parseInt(document.getElementById('pFreq').value)||3,stress:parseInt(document.getElementById('pStress').value)||5,motivlvl:parseInt(document.getElementById('pMotivLvl').value)||7,motivtext:document.getElementById('pMotivT').value||'',goals:document.getElementById('pGoalS').value||'',goall:document.getElementById('pGoalL').value||'',teamh:th,soloh:sh,totalh:th+sh,unit:UD.unit,sq:parseFloat(document.getElementById('pSq').value)||0,bp:parseFloat(document.getElementById('pBP').value)||0,dl:parseFloat(document.getElementById('pDL').value)||0};
+  UD.position=pos;UD.lang=LANG;
+  const bm=UD.baseMarks;
+  if(bm.speed===null)bm.speed=UD.profile.speed;if(bm.squat===null)bm.squat=UD.profile.sq;if(bm.bench===null)bm.bench=UD.profile.bp;if(bm.dead===null)bm.dead=UD.profile.dl;if(bm.endurance===null)bm.endurance=UD.profile.end;
+  saveUD();
+  showPage('dashboard');
+  document.getElementById('aiLoad').style.display='flex';document.getElementById('dashC').style.display='none';
+  setTimeout(()=>{document.getElementById('aiLoad').style.display='none';document.getElementById('dashC').style.display='block';initDash();toast(i('toastPlan'));},2000);
+}
+
+/* ══════════════════════════════════════════════════════════
+   BANCO DE EJERCICIOS — LUNES, MIÉRCOLES, VIERNES
+   Offset de timers: LUN=300, MIÉ=400, VIE=500 (sin colisión)
+══════════════════════════════════════════════════════════ */
+const VOL_FACTOR={Delantero:[1.4,0.9,1.2],Volante:[1.2,0.8,1.4],Defensa:[0.9,1.4,0.9],Arquero:[0.8,1.3,0.8],default:[1.0,1.0,1.0]};
+const LVL_FACTOR={difutbol:1.5,liga_a:1.25,liga_b:1.0,escolar:0.75,recreativo:0.6};
+const LEVEL_CNT={difutbol:4,liga_a:4,liga_b:3,escolar:2,recreativo:2};
+function adjSeries(base,ai,pos,lvl){return Math.max(1,Math.round(base*(VOL_FACTOR[pos]||VOL_FACTOR.default)[ai]*(LVL_FACTOR[lvl]||1.0)));}
+
+const EXDB_LUN=[
+  {id:'l1',n:{es:'Skipping Explosivo + Sprint de 30m',en:'Explosive Skipping + 30m Sprint'},muscle:{es:'Cuádriceps / Gemelos / SNC',en:'Quads / Calves / CNS'},baseSeries:4,baseReps:{es:'5 sprints',en:'5 sprints'},rpe:9,detail:{es:'Desarrolla la frecuencia de zancada y la potencia de arranque inicial en transiciones cortas. El skipping activa el SNC antes del sprint máximo.',en:'Develops stride frequency and starting power in short transitions. Skipping activates the CNS before the max sprint.'},url:'https://www.youtube.com/embed/H37ZpX7Vbyw?rel=0&enablejsapi=1&modestbranding=1&fs=1',sec:45},
+  {id:'l2',n:{es:'Sprints con Cambios de Ritmo en Desaceleración',en:'Sprint Deceleration Rhythm Changes'},muscle:{es:'Isquiotibiales / Glúteos',en:'Hamstrings / Glutes'},baseSeries:3,baseReps:{es:'4 repeticiones de 20m',en:'4 reps of 20m'},rpe:8,detail:{es:'Entrena la capacidad de frenar y volver a arrancar al máximo de inmediato. Simula las transiciones del partido real.',en:'Trains the ability to brake and immediately restart at max. Simulates real match transitions.'},url:'https://www.youtube.com/embed/R5J4Vn7b1m8?rel=0&enablejsapi=1&modestbranding=1&fs=1',sec:60},
+  {id:'l3',n:{es:'Salidas Reactivas con Estímulo Visual',en:'Reactive Starts on Visual Cue'},muscle:{es:'Glúteos / Tiempo de reacción',en:'Glutes / Reaction Time'},baseSeries:5,baseReps:{es:'6 salidas',en:'6 starts'},rpe:9,detail:{es:'Sprint reactivo al estímulo del entrenador. Trabaja el tiempo de respuesta neuromotora y los primeros 5 metros decisivos.',en:'Reactive sprint on coach cue. Trains neuromotor response and the decisive first 5 meters.'},url:'https://www.youtube.com/embed/H37ZpX7Vbyw?rel=0&enablejsapi=1&modestbranding=1&fs=1&start=35',sec:30},
+  {id:'l4',n:{es:'Escalera de Coordinación de Alta Frecuencia',en:'High-Frequency Coordination Ladder'},muscle:{es:'Gemelos / Coordinación neuromuscular',en:'Calves / Neuromuscular Coordination'},baseSeries:4,baseReps:{es:'3 bajadas completas',en:'3 full runs'},rpe:7,detail:{es:'Patrones de pies en escalera: dos dentro-dos fuera, lateral cruzado, shuffle. Aumenta la cadencia y la coordinación neuromuscular.',en:'Foot patterns on ladder: in-in-out-out, lateral crossover, shuffle. Increases cadence and neuromuscular coordination.'},url:'https://www.youtube.com/embed/R5J4Vn7b1m8?rel=0&enablejsapi=1&modestbranding=1&fs=1&start=45',sec:45},
+];
+const EXDB_WED=[
+  {id:'w1',n:{es:'Sentadilla Búlgara Unilateral de Potencia',en:'Power Bulgarian Split Squat'},muscle:{es:'Glúteos / Cuádriceps / Core',en:'Glutes / Quads / Core'},baseSeries:4,baseReps:{es:'6 reps por pierna',en:'6 reps each leg'},rpe:8,detail:{es:'Incrementa la fuerza útil en cada pierna de forma independiente, esencial para el choque físico y el salto. Corrige asimetrías musculares.',en:'Increases functional strength in each leg independently. Corrects muscle asymmetries that raise injury risk.'},url:'https://www.youtube.com/embed/H6m6Gg_937I?rel=0&enablejsapi=1&modestbranding=1&fs=1',sec:60},
+  {id:'w2',n:{es:'Saltos Pliométricos a Cajón Alto (Drop Jumps)',en:'Box Drop Jumps (Plyometrics)'},muscle:{es:'Tren Inferior Explosivo / Tendones',en:'Explosive Lower Body / Tendons'},baseSeries:3,baseReps:{es:'5 saltos explosivos',en:'5 explosive jumps'},rpe:9,detail:{es:'Desarrolla el ciclo de estiramiento-acortamiento muscular para maximizar el salto vertical en disputas aéreas.',en:'Develops the muscle stretch-shortening cycle to maximize vertical jump in aerial duels.'},url:'https://www.youtube.com/embed/5-mZ0-4aWiw?rel=0&enablejsapi=1&modestbranding=1&fs=1',sec:45},
+  {id:'w3',n:{es:'Peso Muerto Rumano Unilateral',en:'Single-Leg Romanian Deadlift'},muscle:{es:'Isquiotibiales / Glúteo Mayor',en:'Hamstrings / Gluteus Maximus'},baseSeries:3,baseReps:{es:'8 reps por lado',en:'8 reps per side'},rpe:7,detail:{es:'Bisagra de cadera unilateral que fortalece la cadena posterior. Previene lesiones de isquiotibiales.',en:'Unilateral hip hinge strengthening the posterior chain. Prevents hamstring injuries.'},url:'https://www.youtube.com/embed/H6m6Gg_937I?rel=0&enablejsapi=1&modestbranding=1&fs=1&start=45',sec:60},
+  {id:'w4',n:{es:'Saltos Laterales en Vallas de Reactividad',en:'Reactive Lateral Hurdle Jumps'},muscle:{es:'Abductores / Estabilizadores de Rodilla',en:'Abductors / Knee Stabilizers'},baseSeries:4,baseReps:{es:'10 saltos por lado',en:'10 jumps per side'},rpe:7,detail:{es:'Salto lateral continuo sobre mini-vallas. Desarrolla la estabilidad lateral y la capacidad reactiva en cambios de dirección.',en:'Continuous lateral jumps over mini hurdles. Develops lateral stability and reactive capacity.'},url:'https://www.youtube.com/embed/5-mZ0-4aWiw?rel=0&enablejsapi=1&modestbranding=1&fs=1&start=30',sec:45},
+];
+const EXDB_FRI=[
+  {id:'f1',n:{es:'Control Orientado y Pase Corto a Dos Toques',en:'Oriented Control & Two-Touch Short Pass'},muscle:{es:'Abductores / Precisión Técnica',en:'Abductors / Technical Precision'},baseSeries:3,baseReps:{es:'3 minutos continuos',en:'3 continuous minutes'},rpe:6,detail:{es:'Pulir la amortiguación del balón para ganar ventaja al defensor. El primer toque orientado al espacio libre es la diferencia entre el jugador promedio y el de élite.',en:'Refines ball cushioning to gain advantage on defender. First touch to open space distinguishes average from elite players.'},url:'https://www.youtube.com/embed/6_H-G3vO2hM?rel=0&enablejsapi=1&modestbranding=1&fs=1',sec:90},
+  {id:'f2',n:{es:'Conducción en Zig-Zag con Perfilación Corporal',en:'Zig-Zag Dribbling with Body Shaping'},muscle:{es:'Control / Coordinación Ojo-Pie',en:'Control / Eye-Foot Coordination'},baseSeries:3,baseReps:{es:'6 pasadas de 20m',en:'6 runs of 20m'},rpe:7,detail:{es:'Automatiza el traslado del balón pegado al pie usando borde interno y externo. La perfilación corporal permite ver el campo mientras se conduce.',en:'Automates close ball carrying with inside and outside edges. Body shaping allows full field vision while dribbling.'},url:'https://www.youtube.com/embed/nUfeXk9E7K8?rel=0&enablejsapi=1&modestbranding=1&fs=1',sec:45},
+  {id:'f3',n:{es:'Rondo 3vs1 de Posesión y Precisión',en:'3v1 Possession & Precision Rondo'},muscle:{es:'Core / Visión Periférica',en:'Core / Peripheral Vision'},baseSeries:4,baseReps:{es:'Series de 4 minutos',en:'4-minute sets'},rpe:7,detail:{es:'Posesión 3vs1 en espacio reducido. Desarrolla velocidad de pensamiento y precisión del pase bajo presión real.',en:'3v1 possession in reduced space. Develops thinking speed and pass precision under real pressure.'},url:'https://www.youtube.com/embed/6_H-G3vO2hM?rel=0&enablejsapi=1&modestbranding=1&fs=1&start=60',sec:90},
+  {id:'f4',n:{es:'Finalizaciones al Primer Toque',en:'First-Touch Finishing'},muscle:{es:'Cuádriceps / Precisión de Remate',en:'Quads / Finishing Precision'},baseSeries:4,baseReps:{es:'8 remates',en:'8 shots'},rpe:8,detail:{es:'Remate de primera intención tras servicio cruzado. Trabaja timing de llegada, colocación y definición bajo presión.',en:'First-time shot after cross service. Works on arrival timing, placement and finishing under pressure.'},url:'https://www.youtube.com/embed/nUfeXk9E7K8?rel=0&enablejsapi=1&modestbranding=1&fs=1&start=55',sec:60},
+];
+
+/* Mapa: dow → definición del día de entrenamiento */
+const CAL_DEF={
+  1:{bank:EXDB_LUN,ai:0,titleKey:'calVelTitle',subKey:'calVelSub',cls:'vel',offset:300},
+  3:{bank:EXDB_WED,ai:1,titleKey:'calFueTitle',subKey:'calFueSub',cls:'fue',offset:400},
+  5:{bank:EXDB_FRI,ai:2,titleKey:'calTecTitle',subKey:'calTecSub',cls:'tec',offset:500},
+};
+
+/* ── TIMERS ───────────────────────────────────────────────── */
+const TIMERS={};
+const TPRESETS=[30,45,60,90,120];
+function createTimer(idx){if(!TIMERS[idx])TIMERS[idx]={interval:null,remaining:45,preset:45,running:false};}
+function renderTimerHTML(idx){
+  return`<div class="timer-wrap" id="tw_${idx}">
+    <div class="timer-presets">${TPRESETS.map(s=>`<button class="tpreset${s===45?' active':''}" onclick="setPreset(${idx},${s})">${s}s</button>`).join('')}</div>
+    <div class="timer-display" id="td_${idx}">0:45</div>
+    <div class="timer-btns">
+      <button class="tbtn start" id="tbs_${idx}" onclick="timerToggle(${idx})">${i('timerStart')}</button>
+      <button class="tbtn reset" onclick="timerReset(${idx})">${i('timerReset')}</button>
+      <button class="tbtn complete" id="tbc_${idx}" onclick="markExDone(${idx})">${i('timerDone')}</button>
+    </div>
+    <div class="timer-alert" id="ta_${idx}">${i('timerReady')}</div>
+  </div>`;
+}
+function setPreset(idx,s){const tm=TIMERS[idx];if(!tm||tm.running)return;tm.preset=s;tm.remaining=s;document.getElementById('tw_'+idx)?.querySelectorAll('.tpreset').forEach(b=>b.classList.toggle('active',parseInt(b.textContent)===s));updTD(idx);}
+function timerToggle(idx){
+  const tm=TIMERS[idx];if(!tm)return;
+  if(tm.running){clearInterval(tm.interval);tm.running=false;const b=document.getElementById('tbs_'+idx);if(b)b.textContent=i('timerStart');const a=document.getElementById('ta_'+idx);if(a){a.textContent=i('timerReady');a.classList.remove('on');}}
+  else{if(tm.remaining<=0)timerReset(idx);tm.running=true;const b=document.getElementById('tbs_'+idx);if(b)b.textContent=i('timerPause');const a=document.getElementById('ta_'+idx);if(a){a.textContent=i('timerGo');a.classList.add('on');}tm.interval=setInterval(()=>timerTick(idx),1000);}
+}
+function timerTick(idx){const tm=TIMERS[idx];if(!tm)return;tm.remaining--;updTD(idx);const d=document.getElementById('td_'+idx);if(d)d.className='timer-display'+(tm.remaining<=0?' done':tm.remaining<=10?' warn':'');if(tm.remaining<=0){clearInterval(tm.interval);tm.running=false;timerFin(idx);}}
+function timerFin(idx){const a=document.getElementById('ta_'+idx);if(a){a.textContent=i('timerAlert');a.classList.add('on');}const b=document.getElementById('tbs_'+idx);if(b)b.textContent=i('timerStart');}
+function timerReset(idx){const tm=TIMERS[idx];if(!tm)return;clearInterval(tm.interval);tm.running=false;tm.remaining=tm.preset;const d=document.getElementById('td_'+idx);if(d)d.className='timer-display';const b=document.getElementById('tbs_'+idx);if(b)b.textContent=i('timerStart');const a=document.getElementById('ta_'+idx);if(a){a.textContent=i('timerReady');a.classList.remove('on');}updTD(idx);}
+function updTD(idx){const tm=TIMERS[idx];if(!tm)return;const r=Math.max(0,tm.remaining);const el=document.getElementById('td_'+idx);if(el)el.textContent=Math.floor(r/60)+':'+(r%60<10?'0':'')+r%60;}
+
+/* ── EJERCICIOS COMPLETADOS DEL CALENDARIO ───────────────── */
+/* Usamos un Set por key de fecha: calDoneByDay[key] = Set de índices */
+const calDoneByDay={};
+function getCalDone(key){if(!calDoneByDay[key])calDoneByDay[key]=new Set();return calDoneByDay[key];}
+
+/* markExDone es llamado por el botón "Hecho" del timer */
+function markExDone(idx){
+  /* Buscar el key del bloque abierto en el calendario */
+  const openCard=document.querySelector('.cdc-body.open');
+  if(openCard){
+    const key=openCard.id.replace('cdcb_','');
+    const done=getCalDone(key);
+    if(done.has(idx))return;
+    done.add(idx);
+    /* Marcar tarjeta */
+    const card=document.querySelector(`.excard[data-ex="${idx}"]`);if(card)card.classList.add('done-ex');
+    const btn=document.getElementById('tbc_'+idx);if(btn){btn.disabled=true;btn.textContent='✓';}
+    const tm=TIMERS[idx];if(tm&&tm.running){clearInterval(tm.interval);tm.running=false;}
+    /* Actualizar barra de sesión */
+    updateSessBar(key);
+    toast(i('toastExDone'));
+    return;
+  }
+  /* Fallback: dashboard */
+  toast(i('toastExDone'));
+}
+function updateSessBar(key){
+  const d=CAL_DEF;
+  const dow=new Date(key+'T12:00:00').getDay();
+  const def=d[dow];if(!def)return;
+  const pos=UD.position||'Volante',lvl=UD.profile?.level||'liga_b';
+  const cnt=LEVEL_CNT[lvl]||2;
+  const pool=def.bank.slice(0,cnt);
+  const done=getCalDone(key);
+  const sessDone=Array.from({length:pool.length},(_,k)=>done.has(def.offset+k)).filter(Boolean).length;
+  const pct=pool.length>0?Math.round(sessDone/pool.length*100):0;
+  const sf=document.getElementById('sbf_'+key);if(sf)sf.style.width=pct+'%';
+  const sp=document.getElementById('sbp_'+key);if(sp)sp.textContent=pct+'%';
+}
+
+/* ══════════════════════════════════════════════════════════
+   CALENDARIO INTEGRADO v10
+   — 7 tarjetas acordeón por semana
+   — Días de entreno: despliegan ejercicios con timer + iframe
+   — Días de descanso: muestran tips + semáforo de riesgo
+   — Restricción temporal: solo se confirma el día actual
+═══════════════════════════════════════════════════════════ */
+const calOpen={}; /* key → bool: qué tarjetas están abiertas */
+const calLoaded={}; /* key → bool: si ya se generó el contenido */
+
+function initCal(){
+  const mon=getMon(UD.calWeek||0);
+  const today=new Date();today.setHours(0,0,0,0);
+  const tKey=today.toISOString().slice(0,10);
+  const wl=document.getElementById('wkLbl');if(wl)wl.textContent=(LANG==='es'?'Semana ':'Week ')+(1+(UD.calWeek||0));
+
+  /* Calcular progreso semanal */
+  let wTotal=0,wDone=0;
+  Array.from({length:7},(_,k)=>{
+    const d=new Date(mon);d.setDate(mon.getDate()+k);
+    const dow=d.getDay();const key=d.toISOString().slice(0,10);
+    if(CAL_DEF[dow]){wTotal++;if(UD.calState[key])wDone++;}
+  });
+  const pct=wTotal>0?Math.round(wDone/wTotal*100):0;
+  const wp=document.getElementById('wpPct');if(wp)wp.textContent=pct+'%';
+  const pf=document.getElementById('pFill');if(pf)pf.style.width=pct+'%';
+  const wn=document.getElementById('wpNote');
+  if(wn)wn.textContent=pct===100?i('calPerfect'):wDone>0?i('calGood',{d:wDone,t:wTotal}):i('calNote');
+
+  /* Generar tarjetas */
+  const dShort=i('daysShort');
+  const list=document.getElementById('calDayList');if(!list)return;
+  list.innerHTML=Array.from({length:7},(_,k)=>{
+    const d=new Date(mon);d.setDate(mon.getDate()+k);
+    const dow=d.getDay();const key=d.toISOString().slice(0,10);
+    const def=CAL_DEF[dow];
+    const isTrain=!!def;
+    const isDone=!!UD.calState[key];
+    const isToday=key===tKey;
+    const isFuture=d>today;
+    /* Clase de la tarjeta */
+    let cc='cal-day-card';
+    if(isTrain)cc+=' train-day';else cc+=' rest-day';
+    if(isDone)cc+=' done-day';
+    if(isToday)cc+=' today-day';
+    if(isFuture&&!isDone)cc+=' future-day';
+    /* Badge */
+    let bdg='';
+    if(isDone)bdg=`<span class="cdc-bdg bdg-done">${i('bdgDone')}</span>`;
+    else if(isToday)bdg=`<span class="cdc-bdg bdg-today">${i('bdgToday')}</span>`;
+    else if(!isTrain)bdg=`<span class="cdc-bdg bdg-rest">${i('bdgRest')}</span>`;
+    else if(isFuture)bdg=`<span class="cdc-bdg bdg-future">${i('bdgFuture')}</span>`;
+    /* Título ámbito */
+    let amb='';
+    if(isTrain&&def){amb=`<div class="cdc-ambito ${def.cls}">${i(def.titleKey)}</div><div class="cdc-sub">${i(def.subKey)}</div>`;}
+    else{amb=`<div class="cdc-ambito rst">${i('calRstTitle')}</div><div class="cdc-sub">${i('calRstSub')}</div>`;}
+    const isOpen=!!calOpen[key];
+    return`<div class="${cc}" id="cdc_${key}">
+      <div class="cdc-hdr" id="cdch_${key}" onclick="toggleCalDay('${key}')">
+        <div class="cdc-left">
+          <div class="cdc-date"><div class="cdc-daynum">${d.getDate()}</div><div class="cdc-dayname">${dShort[k]}</div></div>
+          <div>${amb}</div>
+        </div>
+        <div class="cdc-right">${bdg}<span class="cdc-arrow${isOpen?' open':''}" id="cdca_${key}">›</span></div>
+      </div>
+      <div class="cdc-body${isOpen?' open':''}" id="cdcb_${key}">
+        <div class="cdc-inner" id="cdci_${key}"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  /* Regenerar contenido de tarjetas que estaban abiertas */
+  Object.entries(calOpen).forEach(([key,open])=>{
+    if(open&&!calLoaded[key]){
+      const d=new Date(key+'T12:00:00');
+      fillCalDay(key,d.getDay());
+    }
+  });
+}
+
+function toggleCalDay(key){
+  const body=document.getElementById('cdcb_'+key);
+  const arrow=document.getElementById('cdca_'+key);
+  if(!body)return;
+  const wasOpen=body.classList.contains('open');
+  /* Cerrar todo */
+  document.querySelectorAll('.cdc-body.open').forEach(b=>b.classList.remove('open'));
+  document.querySelectorAll('.cdc-arrow.open').forEach(a=>a.classList.remove('open'));
+  Object.keys(calOpen).forEach(k=>{calOpen[k]=false;});
+  if(!wasOpen){
+    body.classList.add('open');
+    if(arrow)arrow.classList.add('open');
+    calOpen[key]=true;
+    if(!calLoaded[key]){
+      const d=new Date(key+'T12:00:00');
+      fillCalDay(key,d.getDay());
+    }
+  }
+}
+
+function fillCalDay(key,dow){
+  const inner=document.getElementById('cdci_'+key);if(!inner)return;
+  calLoaded[key]=true;
+  const def=CAL_DEF[dow];
+  const today=new Date();today.setHours(0,0,0,0);
+  const isToday=key===today.toISOString().slice(0,10);
+  const isDone=!!UD.calState[key];
+  const isFuture=new Date(key+'T12:00:00')>today;
+  /* Semáforo compacto */
+  const h=UD.profile?.totalh||8,s=UD.profile?.stress||5,e=UD.profile?.end||30;
+  const risk=(h*s)/Math.max(1,e/10);
+  let sc='g',sico='🟢',slv='semGreenLv',srec='semGreenRec';
+  if(risk>35){sc='r';sico='🔴';slv='semRedLv';srec='semRedRec';}
+  else if(risk>18){sc='y';sico='🟡';slv='semYellowLv';srec='semYellowRec';}
+  const semHtml=`<div class="sem-mini ${sc}" style="margin-bottom:12px"><span style="font-size:1rem">${sico}</span><span><strong>${i('semLabel')}:</strong> ${i(slv)} · ${i(srec,{h,s,e})}</span></div>`;
+
+  if(!def){
+    /* DÍA DE DESCANSO */
+    inner.innerHTML=semHtml+`<div class="rest-block"><div class="rest-ico">🧘</div><div><div class="rest-tit">${i('calRstTitle')}</div><p style="font-size:.74rem;color:var(--ts);margin-bottom:7px">${i('calRstSub')}</p><ul class="rest-list"><li>${i('rstTip1')}</li><li>${i('rstTip2')}</li><li>${i('rstTip3')}</li><li>${i('rstTip4')}</li></ul></div></div>`;
+    return;
+  }
+
+  /* DÍA DE ENTRENAMIENTO */
+  const pos=UD.position||'Volante',lvl=UD.profile?.level||'liga_b';
+  const cnt=LEVEL_CNT[lvl]||2;
+  const pool=def.bank.slice(0,cnt);
+  const done=getCalDone(key);
+  /* Inicializar timers */
+  pool.forEach((_,k)=>{
+    const idx=def.offset+k;
+    createTimer(idx);
+    TIMERS[idx].preset=pool[k].sec||45;
+    TIMERS[idx].remaining=pool[k].sec||45;
+  });
+  /* Barra de sesión */
+  const sessDone=Array.from({length:pool.length},(_,k)=>done.has(def.offset+k)).filter(Boolean).length;
+  const sessPct=pool.length>0?Math.round(sessDone/pool.length*100):0;
+  const sessBarHtml=`<div class="sess-bar"><div class="sb-row"><span class="sb-lbl">${i('sessProg')}</span><span class="sb-pct" id="sbp_${key}">${sessPct}%</span></div><div class="sb-track"><div class="sb-fill" id="sbf_${key}" style="width:${sessPct}%"></div></div></div>`;
+  /* Cards de ejercicios */
+  const exHtml=pool.map((ex,k)=>{
+    const idx=def.offset+k;
+    const nm=ex.n[LANG]||ex.n.es;
+    const det=ex.detail[LANG]||ex.detail.es;
+    const mus=ex.muscle[LANG]||ex.muscle.es;
+    const reps=typeof ex.baseReps==='object'?(ex.baseReps[LANG]||ex.baseReps.es):ex.baseReps;
+    const adjS=adjSeries(ex.baseSeries||3,def.ai,pos,lvl);
+    const rpeDots=Array.from({length:10},(_,r)=>`<div class="rpedot" style="background:${r<ex.rpe?'var(--a)':'var(--bdr)'}"></div>`).join('');
+    const isDoneEx=done.has(idx);
+    return`<div class="excard${isDoneEx?' done-ex':''}" data-ex="${idx}" style="animation-delay:${k*.07}s">
+      <div class="exhdr" onclick="togEx(${idx})">
+        <div class="exinfo">
+          <div class="exnum">${String(k+1).padStart(2,'0')}</div>
+          <div><div class="exname">${nm} <span class="ex-done-badge">✓</span></div><div class="exmeta">${adjS} series × ${reps} · RPE ${ex.rpe}/10 · ${mus}</div></div>
+        </div>
+        <button class="xtog" id="xt_${idx}">▼</button>
+      </div>
+      <div class="vbody" id="vb_${idx}">
+        <div class="vwrap"><iframe width="100%" height="200" src="${ex.url}" title="${nm}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+        <div class="exdetail"><strong>${LANG==='es'?'Detalle Técnico:':'Technical Detail:'}</strong> ${det}</div>
+        <div class="rpe-row">${rpeDots}<span class="rpe-txt">RPE ${ex.rpe}/10</span></div>
+        ${renderTimerHTML(idx)}
+      </div>
+    </div>`;
+  }).join('');
+  /* Botón confirmar */
+  let cfmHtml='';
+  if(isDone){cfmHtml=`<button class="cfm-btn done" disabled>✓ ${i('cfmDone')}</button>`;}
+  else if(isToday){cfmHtml=`<button class="cfm-btn" id="cfmbtn_${key}" onclick="cfmDay('${key}')">${i('cfmBtn')}</button>`;}
+  else if(isFuture){cfmHtml=`<button class="cfm-btn" disabled>${i('cfmFuture')}</button>`;}
+  else{cfmHtml=`<button class="cfm-btn" disabled style="opacity:.45">${i('cfmPast')}</button>`;}
+
+  inner.innerHTML=semHtml+sessBarHtml+`<div class="exlist">${exHtml}</div><div class="cfm-wrap">${cfmHtml}</div>`;
+}
+
+function togEx(idx){
+  const b=document.getElementById('vb_'+idx),t=document.getElementById('xt_'+idx);
+  if(!b)return;const o=b.classList.contains('open');
+  b.classList.toggle('open',!o);if(t)t.classList.toggle('open',!o);if(!o)updTD(idx);
+}
+
+/* Confirmar entrenamiento del día actual */
+function cfmDay(key){
+  const today=new Date();today.setHours(0,0,0,0);
+  if(key!==today.toISOString().slice(0,10)){toast(i('cfmOnlyToday'));return;}
+  UD.calState[key]=true;saveUD();
+  /* Actualizar visual sin re-renderizar todo */
+  const card=document.getElementById('cdc_'+key);
+  if(card){card.classList.add('done-day');card.classList.remove('today-day','future-day');}
+  /* Actualizar badge */
+  const bdgEl=card?.querySelector('.cdc-bdg');
+  if(bdgEl){bdgEl.className='cdc-bdg bdg-done';bdgEl.textContent=i('bdgDone');}
+  /* Cambiar botón */
+  const btn=document.getElementById('cfmbtn_'+key);
+  if(btn){btn.className='cfm-btn done';btn.disabled=true;btn.textContent='✓ '+i('cfmDone');}
+  /* Actualizar barra semanal */
+  initCalProgress();
+  toast(i('calConfirmedToast'));
+}
+
+function initCalProgress(){
+  const mon=getMon(UD.calWeek||0);
+  let wTotal=0,wDone=0;
+  Array.from({length:7},(_,k)=>{
+    const d=new Date(mon);d.setDate(mon.getDate()+k);
+    const dow=d.getDay();const key=d.toISOString().slice(0,10);
+    if(CAL_DEF[dow]){wTotal++;if(UD.calState[key])wDone++;}
+  });
+  const pct=wTotal>0?Math.round(wDone/wTotal*100):0;
+  const wp=document.getElementById('wpPct');if(wp)wp.textContent=pct+'%';
+  const pf=document.getElementById('pFill');if(pf)pf.style.width=pct+'%';
+  const wn=document.getElementById('wpNote');
+  if(wn)wn.textContent=pct===100?i('calPerfect'):wDone>0?i('calGood',{d:wDone,t:wTotal}):i('calNote');
+}
+
+function getMon(off){const t=new Date();t.setHours(0,0,0,0);const dow=t.getDay(),diff=dow===0?-6:1-dow;const b=new Date(t);b.setDate(t.getDate()+diff+off*7);return b;}
+
+/* ── DASHBOARD ────────────────────────────────────────────── */
+function buildSem(){
+  const p=UD.profile;const h=p?.totalh||8,s=p?.stress||5,e=p?.end||30;
+  const risk=(h*s)/Math.max(1,e/10);
+  let cls='g',ico='🟢',lv='semGreenLv',rec='semGreenRec';
+  if(risk>35){cls='r';ico='🔴';lv='semRedLv';rec='semRedRec';}
+  else if(risk>18){cls='y';ico='🟡';lv='semYellowLv';rec='semYellowRec';}
+  const sect=document.getElementById('semSect');if(!sect)return;
+  sect.innerHTML=`<div class="sem ${cls}"><div class="sem-ico">${ico}</div><div class="sem-bdg"><div class="semdot"></div>${i('semLabel')}</div><div class="sem-lv">${i(lv)}</div><div class="sem-rec">${i(rec,{h,s,e})}</div><div style="clear:both"></div></div>`;
+}
+function buildAttrBars(){
+  const p=UD.profile;let sp=70,en=68,st=65,mn=72,tc=75;
+  if(p){sp=Math.min(95,Math.round(100-(p.speed-3)*20));en=Math.min(95,Math.round(p.end*1.5+20));mn=Math.min(95,Math.round((10-p.stress)*8+20));st=Math.min(95,Math.round(((p.sq||0)+(p.bp||0)+(p.dl||0))/8));}
+  const tot=Math.round((sp+en+st+mn+tc)/5);
+  const ds=document.getElementById('dScore');if(ds)ds.textContent=tot;
+  const lm={difutbol:'scoreDif',liga_a:'scoreLigaA',liga_b:'scoreLigaB',escolar:'scoreEsc',recreativo:'scoreRec'};
+  const dss=document.getElementById('dScoreSub');if(dss)dss.textContent=i(lm[p?.level||'liga_b']);
+  const attrs=[{k:'attrSpeed',v:sp},{k:'attrEnd',v:en},{k:'attrStr',v:st},{k:'attrMent',v:mn},{k:'attrTech',v:tc}];
+  const ab=document.getElementById('attrBars');if(!ab)return;
+  ab.innerHTML=attrs.map(a=>`<div class="arow"><div class="an">${i(a.k)}</div><div class="atr"><div class="af" style="width:${a.v}%"></div></div><div class="av">${a.v}</div></div>`).join('');
+}
+let chartInst=null;
+function buildChart(){
+  const ctx=document.getElementById('pChart');if(!ctx)return;
+  if(chartInst){chartInst.destroy();chartInst=null;}
+  chartInst=new Chart(ctx,{type:'line',data:{labels:['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago'],datasets:[{label:i('chartLblS'),data:[58,61,64,67,69,72,74,76],borderColor:'#2ecc71',backgroundColor:'rgba(46,204,113,.07)',borderWidth:2,pointBackgroundColor:'#2ecc71',pointRadius:4,tension:.4,fill:true},{label:i('chartLblE'),data:[55,57,60,62,65,67,70,73],borderColor:'#1a7a43',borderWidth:2,pointBackgroundColor:'#1a7a43',pointRadius:4,tension:.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8ab09a',font:{family:'DM Sans',size:10},boxWidth:10}},tooltip:{backgroundColor:'#0b1f17',borderColor:'#1a3d28',borderWidth:1,titleColor:'#e8f5ee',bodyColor:'#8ab09a'}},scales:{x:{ticks:{color:'#4a7060',font:{family:'DM Sans',size:10}},grid:{color:'rgba(26,61,40,.3)'}},y:{ticks:{color:'#4a7060',font:{family:'DM Sans',size:10}},grid:{color:'rgba(26,61,40,.3)'},min:50,max:100}}}});
+}
+function initDash(){buildSem();buildAttrBars();buildChart();renderLog();}
+
+/* ── LOG MARCAS ───────────────────────────────────────────── */
+function logMark(){
+  const cat=document.getElementById('logCat').value;const val=parseFloat(document.getElementById('logVal').value);
+  if(isNaN(val)){toast(i('toastNum'));return;}
+  const bm=UD.baseMarks;const BM={speed:'speed',squat:'squat',bench:'bench',dead:'dead',endurance:'endurance'};
+  const CL={speed:i('catSpeed'),squat:i('catSq'),bench:i('catBP'),dead:i('catDL'),endurance:i('catEnd')};
+  const base=bm[BM[cat]];let delta=null,isPos=null;
+  if(base!=null&&base!==0){const pct=Math.abs(((val-base)/base)*100).toFixed(1);if(cat==='speed'){isPos=val<base;delta=isPos?`-${pct}% 🚀`:`+${pct}% ⚠️`;}else{isPos=val>base;delta=isPos?`+${pct}% 💪`:`-${pct}% ⚠️`;}}
+  const entry={cat:CL[cat],val,delta,isPos,date:new Date().toLocaleDateString(LANG==='es'?'es-CO':'en-US')};
+  UD.logEntries.unshift(entry);if(UD.logEntries.length>20)UD.logEntries.length=20;saveUD();renderLog();document.getElementById('logVal').value='';toast(i('toastSaved'));
+}
+function renderLog(){
+  const c=document.getElementById('plog');if(!c)return;
+  if(!UD.logEntries.length){c.innerHTML=`<div style="font-size:.69rem;color:var(--tm);padding:6px">${LANG==='es'?'Sin registros aún.':'No records yet.'}</div>`;return;}
+  c.innerHTML=UD.logEntries.slice(0,8).map(e=>`<div class="ple"><div class="ple-c">${e.cat}</div>${e.delta?`<div class="ple-d ${e.isPos?'dp':'dn'}">${e.delta}</div>`:''}<div class="ple-v">${e.val}</div><div class="ple-dt">${e.date}</div></div>`).join('');
+}
+
+/* ── NUTRICIÓN ────────────────────────────────────────────── */
+function initNut(){
+  const p=UD.profile;const age=p?.age||16,h=p?.height||175,w=p?.weight||70,pos=UD.position||'Volante',totalH=p?.totalh||8;
+  const bmr=Math.round(10*w+6.25*h-5*age+5);const tdee=Math.round(bmr*1.725)+Math.max(0,totalH-10)*50;
+  const MB={Delantero:{prot:w*2.0,carbs:w*6.0,fat:w*1.2},Volante:{prot:w*2.0,carbs:w*7.0,fat:w*1.0},Defensa:{prot:w*2.2,carbs:w*5.5,fat:w*1.3},Arquero:{prot:w*2.4,carbs:w*4.5,fat:w*1.4}};
+  const mb=MB[pos]||MB.Volante;const mac={prot:Math.round(mb.prot),carbs:Math.round(mb.carbs),fat:Math.round(mb.fat)};
+  const cal=mac.prot*4+mac.carbs*4+mac.fat*9;const hyd=(Math.round(w*0.04*10)/10).toFixed(1);
+  const todayIdx=(new Date().getDay()+6)%7;const isTrainDay=[1,3,5].includes(new Date().getDay());
+  const cAdj=isTrainDay?Math.round(mac.carbs*1.15):Math.round(mac.carbs*0.8);
+  const bio=T.nutBioTxt?.[pos]?.[LANG]||'';
+  const nc=document.getElementById('nutC');if(!nc)return;
+  nc.innerHTML=`<div class="card cglow" style="text-align:center;margin-bottom:11px;padding:16px"><div style="font-size:2.1rem;margin-bottom:6px">🥗</div><h3 style="font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;font-weight:700;letter-spacing:1px;text-transform:uppercase">${i('nutPlan')}<span style="color:var(--a)">${pos}</span></h3><p style="font-size:.73rem;color:var(--ts);margin-top:4px;line-height:1.6">${bio}</p><p style="font-size:.68rem;color:var(--tm);margin-top:4px">${w}kg · ${h}cm · ${age}${LANG==='es'?' años':' yrs'} · TDEE: <strong style="color:var(--a)">${tdee} kcal</strong></p></div><div class="mgrid"><div class="mc2"><div class="mi">🥩</div><div class="mv">${mac.prot}g</div><div class="mu">g/día</div><div class="ml">${i('macroP')}</div><div class="mbarw"><div class="mbar" style="width:${Math.round(mac.prot*4/cal*100)}%"></div></div></div><div class="mc2"><div class="mi">🍚</div><div class="mv">${mac.carbs}g</div><div class="mu">g/día</div><div class="ml">${i('macroC')}</div><div class="mbarw"><div class="mbar" style="width:${Math.round(mac.carbs*4/cal*100)}%"></div></div></div><div class="mc2"><div class="mi">🥑</div><div class="mv">${mac.fat}g</div><div class="mu">g/día</div><div class="ml">${i('macroF')}</div><div class="mbarw"><div class="mbar" style="width:${Math.round(mac.fat*9/cal*100)}%"></div></div></div></div><div class="dayadj">📅 <strong>${i(isTrainDay?'trainDay':'restDay')}:</strong> ${i(isTrainDay?'trainNote':'restNote',{g:cAdj})}</div><div class="nnote">${i('nutNote')}</div>`;
+}
+
+/* ── SCOUTING ─────────────────────────────────────────────── */
+function buildSV(){
+  const pos=UD.position||'';
+  const VIDS={Delantero:[{url:'https://www.youtube.com/embed/H37ZpX7Vbyw?rel=0&enablejsapi=1',l:{es:'Sprint y Velocidad',en:'Sprint & Speed'},c:'⚡'},{url:'https://www.youtube.com/embed/nUfeXk9E7K8?rel=0&enablejsapi=1',l:{es:'Conducción y Desborde',en:'Dribbling'},c:'⚽'},{url:'https://www.youtube.com/embed/6_H-G3vO2hM?rel=0&enablejsapi=1',l:{es:'Definición y Remates',en:'Finishing'},c:'🎯'}],Volante:[{url:'https://www.youtube.com/embed/6_H-G3vO2hM?rel=0&enablejsapi=1',l:{es:'Control y Pase',en:'Control & Pass'},c:'🔄'},{url:'https://www.youtube.com/embed/R5J4Vn7b1m8?rel=0&enablejsapi=1',l:{es:'Agilidad Táctica',en:'Tactical Agility'},c:'🧠'},{url:'https://www.youtube.com/embed/nUfeXk9E7K8?rel=0&enablejsapi=1',l:{es:'Visión de Juego',en:'Game Vision'},c:'👁️'}],Defensa:[{url:'https://www.youtube.com/embed/H6m6Gg_937I?rel=0&enablejsapi=1',l:{es:'Fuerza Defensiva',en:'Defensive Strength'},c:'🛡️'},{url:'https://www.youtube.com/embed/R5J4Vn7b1m8?rel=0&enablejsapi=1',l:{es:'Cambios de Dirección',en:'Direction Changes'},c:'🏃'},{url:'https://www.youtube.com/embed/6_H-G3vO2hM?rel=0&enablejsapi=1',l:{es:'Salida con Balón',en:'Build-Up Play'},c:'🎯'}],Arquero:[{url:'https://www.youtube.com/embed/5-mZ0-4aWiw?rel=0&enablejsapi=1',l:{es:'Potencia y Salto',en:'Power & Jump'},c:'🥅'},{url:'https://www.youtube.com/embed/H37ZpX7Vbyw?rel=0&enablejsapi=1',l:{es:'Reflejos',en:'Reflexes'},c:'🧤'},{url:'https://www.youtube.com/embed/R5J4Vn7b1m8?rel=0&enablejsapi=1',l:{es:'Posicionamiento',en:'Positioning'},c:'📍'}],default:[{url:'https://www.youtube.com/embed/H37ZpX7Vbyw?rel=0&enablejsapi=1',l:{es:'Velocidad',en:'Speed'},c:'⚡'},{url:'https://www.youtube.com/embed/6_H-G3vO2hM?rel=0&enablejsapi=1',l:{es:'Técnica',en:'Technique'},c:'⚽'},{url:'https://www.youtube.com/embed/H6m6Gg_937I?rel=0&enablejsapi=1',l:{es:'Fuerza',en:'Strength'},c:'💪'}]};
+  const vset=VIDS[pos]||VIDS.default;
+  const gr=document.getElementById('svGr');if(!gr)return;
+  gr.innerHTML=vset.map(v=>`<div class="svcard"><div class="vwrap" style="border-radius:var(--r) var(--r) 0 0"><iframe width="100%" height="200" src="${v.url}" title="${v.l[LANG]||v.l.es}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe></div><div class="svlbl"><span>${v.c}</span> ${v.l[LANG]||v.l.es}</div></div>`).join('');
+}
+function procV(f){const vn=document.getElementById('vName');if(vn)vn.textContent=f.name;document.getElementById('anSect').style.display='block';document.getElementById('aRes').classList.remove('show');document.getElementById('uzn').style.display='none';setTimeout(()=>{buildScoutCards();document.getElementById('aRes').classList.add('show');toast(i('toastScout'));},2500);}
+function buildScoutCards(){
+  const pos=UD.position||'Volante',p=UD.profile;
+  const sp=p?.speed||4.5,en=p?.end||30,st=p?.stress||5;const sq=p?.sq||0,bp=p?.bp||0,dl=p?.dl||0;
+  const sScore=Math.min(98,Math.max(30,Math.round(100-(sp-3.5)*18)));const eScore=Math.min(98,Math.max(30,Math.round(en*1.6+15)));const stScore=Math.min(98,Math.max(30,Math.round((sq+bp+dl)/6)));const mScore=Math.min(98,Math.max(30,Math.round((10-st)*8+22)));
+  const L=LANG;
+  const cards=[{t:L==='es'?'Velocidad y Explosividad':'Speed & Explosiveness',sc:sScore,pts:[L==='es'?`30m: ${sp}s. ${sp>4.8?'⚠️ Sprints reactivos prioritarios.':'✅ Parámetro élite.'}`:`30m: ${sp}s. ${sp>4.8?'⚠️ Reactive sprints priority.':'✅ Elite parameter.'}`,L==='es'?`Aceleración: ${sp>5?'Crítica.':sp>4.5?'Moderada.':'Óptima.'}`:`Acceleration: ${sp>5?'Critical.':sp>4.5?'Moderate.':'Optimal.'}`,L==='es'?'Falso arranque incluido en plan.':'False start included in plan.']},{t:L==='es'?'Resistencia Aeróbica':'Aerobic Endurance',sc:eScore,pts:[L==='es'?`${en}min: ${en<35?'⚠️ Plan aeróbico prioritario.':'✅ Buena base.'}`:`${en}min: ${en<35?'⚠️ Aerobic plan priority.':'✅ Good base.'}`,L==='es'?`${p?.totalh||8}h/sem: ${(p?.totalh||8)>=12?'Óptimo.':'Aumentar.'}`:`${p?.totalh||8}h/week: ${(p?.totalh||8)>=12?'Optimal.':'Increase.'}`,L==='es'?'Clave para los 90 minutos.':'Key for full 90 minutes.']},{t:L==='es'?'Fuerza y Potencia':'Strength & Power',sc:stScore,pts:[L==='es'?`Fuerza total: ${sq+bp+dl}kg. ${(sq+bp+dl)<200?'Priorizar muerto y sentadilla.':'Buena base.'}`:`Total strength: ${sq+bp+dl}kg. ${(sq+bp+dl)<200?'Prioritize deadlift & squat.':'Good base.'}`,L==='es'?`Estrés ${st}/10: ${st>6?'Reducir carga.':'Bien controlado.'}`:`Stress ${st}/10: ${st>6?'Reduce load.':'Well controlled.'}`,L==='es'?'Sentadilla búlgara incluida.':'Bulgarian squat included.']}];
+  document.getElementById('scoutCards').innerHTML=cards.map(c=>`<div class="acard"><div class="acard-h"><div class="ci">📊</div><div class="ct">${c.t}</div></div><div class="ascore"><div class="asnum">${c.sc}</div><div class="asmx">/100</div></div>${c.pts.map(b=>`<div class="abi"><div class="abiD"></div><span>${b}</span></div>`).join('')}</div>`).join('');
+  const ac=document.getElementById('analyzeConf');if(ac)ac.textContent=i('analyzeConf');
+}
+function resetSc(){document.getElementById('anSect').style.display='none';document.getElementById('aRes').classList.remove('show');document.getElementById('uzn').style.display='block';document.getElementById('vInp').value='';}
+
+/* ── TOAST ────────────────────────────────────────────────── */
+let toastT;
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),3300);}
+
+/* ── CELEBRACIÓN ──────────────────────────────────────────── */
+function showCeleb(){
+  const m=document.getElementById('celebModal');if(!m)return;
+  document.getElementById('celebTit').textContent=i('celebTit');document.getElementById('celebSub').textContent=i('celebSub');document.getElementById('celebClose').textContent=i('celebClose');
+  const sp=document.getElementById('sparks');if(sp){const cols=['#2ecc71','#f39c12','#e74c3c','#3498db','#9b59b6'];sp.innerHTML=Array.from({length:18},(_,k)=>{const ang=k/18*360,dist=55+Math.random()*75;const tx=`translate(${Math.cos(ang*Math.PI/180)*dist}px,${Math.sin(ang*Math.PI/180)*dist}px)`;return`<div class="spark" style="left:${35+Math.random()*30}%;top:${35+Math.random()*30}%;background:${cols[k%cols.length]};--tx:${tx};animation-delay:${Math.random()*.5}s;animation-duration:${.8+Math.random()*.5}s"></div>`;}).join('');}
+  m.classList.remove('hidden');
+}
+function closeCeleb(){document.getElementById('celebModal').classList.add('hidden');}
+
+/* ══════════════════════════════════════════════════════════
+   INICIALIZACIÓN — DOMContentLoaded limpio
+   FIX CRÍTICO: los listeners se registran DIRECTAMENTE
+   sobre los elementos del DOM sin cloneNode ni innerHTML
+   para evitar que se pierdan entre renderNav() calls.
+══════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded',()=>{
+  /* 1. Cargar sesión previa */
+  loadSes();
+  /* 2. Idioma */
+  LANG=UD.lang||'es';
+  document.getElementById('lES').classList.toggle('active',LANG==='es');
+  document.getElementById('lEN').classList.toggle('active',LANG==='en');
+  document.getElementById('lES').addEventListener('click',()=>setLang('es'));
+  document.getElementById('lEN').addEventListener('click',()=>setLang('en'));
+
+  /* 3. LANDING — listeners directos sobre los botones del DOM */
+  document.getElementById('landStart').addEventListener('click',()=>showPage('auth'));
+  document.getElementById('landDemo').addEventListener('click',()=>showPage('dashboard'));
+  document.getElementById('logoBtn').addEventListener('click',()=>showPage('landing'));
+
+  /* 4. AUTH */
+  document.getElementById('tabReg').addEventListener('click',()=>swTab('reg'));
+  document.getElementById('tabLog').addEventListener('click',()=>swTab('log'));
+  document.getElementById('btnRegister').addEventListener('click',doRegister);
+  document.getElementById('btnLogin').addEventListener('click',doLogin);
+  document.getElementById('btnGuest').addEventListener('click',doGuest);
+
+  /* 5. PERFIL */
+  document.querySelectorAll('.posbtn').forEach(btn=>{
+    btn.addEventListener('click',()=>{document.querySelectorAll('.posbtn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');document.getElementById('pPos').value=btn.dataset.pos;UD.position=btn.dataset.pos;});
+  });
+  document.querySelectorAll('.ubt').forEach(btn=>{btn.addEventListener('click',()=>{setUnit(btn.dataset.unit);saveUD();});});
+  document.getElementById('btnGenPlan').addEventListener('click',genPlan);
+
+  /* 6. DASHBOARD */
+  document.getElementById('btnSaveMark').addEventListener('click',logMark);
+
+  /* 7. CALENDARIO */
+  document.getElementById('wkPrev').addEventListener('click',()=>{UD.calWeek=Math.max(0,(UD.calWeek||0)-1);saveUD();Object.keys(calLoaded).forEach(k=>delete calLoaded[k]);Object.keys(calOpen).forEach(k=>delete calOpen[k]);initCal();});
+  document.getElementById('wkNext').addEventListener('click',()=>{UD.calWeek=(UD.calWeek||0)+1;saveUD();Object.keys(calLoaded).forEach(k=>delete calLoaded[k]);Object.keys(calOpen).forEach(k=>delete calOpen[k]);initCal();});
+
+  /* 8. USER MENU */
+  document.getElementById('uav').addEventListener('click',e=>{e.stopPropagation();document.getElementById('umenu').classList.toggle('open');});
+  document.getElementById('umPro').addEventListener('click',()=>showPage('profile'));
+  document.getElementById('umDsh').addEventListener('click',()=>showPage('dashboard'));
+  document.getElementById('umCal').addEventListener('click',()=>showPage('calendar'));
+  document.getElementById('umNut').addEventListener('click',()=>showPage('nutrition'));
+  document.getElementById('umOut').addEventListener('click',doLogout);
+
+  /* 9. MOBILE NAV */
+  document.getElementById('mntog').addEventListener('click',()=>document.getElementById('mdraw').classList.toggle('open'));
+
+  /* 10. MODALES */
+  document.getElementById('secClose').addEventListener('click',closeSecModal);
+  document.getElementById('secWasMe').addEventListener('click',closeSecModal);
+  document.getElementById('secChg').addEventListener('click',closeSecModal);
+  document.getElementById('celebClose').addEventListener('click',closeCeleb);
+
+  /* 11. SCOUTING */
+  const uzn=document.getElementById('uzn'),vInp=document.getElementById('vInp');
+  uzn.addEventListener('click',()=>vInp.click());
+  uzn.addEventListener('dragover',e=>{e.preventDefault();uzn.classList.add('over');});
+  uzn.addEventListener('dragleave',()=>uzn.classList.remove('over'));
+  uzn.addEventListener('drop',e=>{e.preventDefault();uzn.classList.remove('over');if(e.dataTransfer.files[0])procV(e.dataTransfer.files[0]);});
+  vInp.addEventListener('change',e=>{if(e.target.files[0])procV(e.target.files[0]);});
+  document.getElementById('btnNewSc').addEventListener('click',resetSc);
+
+  /* 12. Cerrar menús al clic exterior */
+  document.addEventListener('click',e=>{
+    const um=document.getElementById('umenu'),av=document.getElementById('uav');
+    if(!um.contains(e.target)&&!av.contains(e.target))um.classList.remove('open');
+    const md=document.getElementById('mdraw'),mt=document.getElementById('mntog');
+    if(!md.contains(e.target)&&!mt.contains(e.target))md.classList.remove('open');
+  });
+
+  /* 13. Aplicar idioma y mostrar página inicial */
+  applyLang();
+
+  /* FIX CRÍTICO: mostrar landing SIEMPRE si no hay sesión válida */
+  if(SES.email&&SES.name){
+    showPage('calendar'); /* usuario tiene sesión → ir directo al calendario */
+  } else {
+    showPage('landing'); /* siempre mostrar landing si no hay sesión */
+  }
+
+  console.log('ELIT v10 — inicializado ✅  bug landStart: FIXED');
+});
+</script>
+</body>
+</html>
